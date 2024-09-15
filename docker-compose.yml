@@ -1,0 +1,18 @@
+# Use root/example as user/password credentials
+version: '3.1'
+services:
+  mariadb:
+    image: mariadb:10.5
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MYSQL_DATABASE: boarding_house
+      MYSQL_PASSWORD: root
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3304:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3304'
+    volumes:
+      - D:\dev\data\mariadb\nhatro:/var/lib/mysql

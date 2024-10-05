@@ -40,7 +40,7 @@ public class Customer extends BaseEntity {
 
     @Column(name = "bank_name")
     private String bankName;
-    @Column(name = "bank_number", unique = true)
+    @Column(name = "bank_number")
     private String bankNumber;
 
     @OneToMany(mappedBy = "customer")

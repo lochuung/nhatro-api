@@ -3,10 +3,13 @@ package vn.huuloc.boardinghouse.controller.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.huuloc.boardinghouse.dto.request.RoomRequest;
 import vn.huuloc.boardinghouse.dto.response.RoomResponse;
+import vn.huuloc.boardinghouse.dto.sort.filter.RoomSearchRequest;
+import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 import vn.huuloc.boardinghouse.service.RoomService;
 import vn.huuloc.boardinghouse.util.ResponseUtils;
 
@@ -43,5 +46,10 @@ public class RoomController {
     @GetMapping
     public ResponseEntity<List<RoomResponse>> findAll() {
         return ResponseEntity.ok(roomService.findAll());
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<Page<RoomResponse>> search (@RequestBody RoomSearchRequest request) {
+        return ResponseEntity.ok(roomService.search(request));
     }
 }

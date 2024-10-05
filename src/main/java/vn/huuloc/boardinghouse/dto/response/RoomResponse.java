@@ -3,7 +3,7 @@ package vn.huuloc.boardinghouse.dto.response;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import vn.huuloc.boardinghouse.dto.BaseDto;
-import vn.huuloc.boardinghouse.entity.enums.RoomStatus;
+import vn.huuloc.boardinghouse.enums.RoomStatus;
 
 import java.math.BigDecimal;
 import java.util.List;

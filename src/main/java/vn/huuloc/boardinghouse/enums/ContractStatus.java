@@ -1,7 +1,7 @@
-package vn.huuloc.boardinghouse.entity.enums;
+package vn.huuloc.boardinghouse.enums;
 
 public enum ContractStatus {
-    ACTIVE("Đang thuê"), INACTIVE("Hết hạn"), CANCEL("Hủy");
+    OPENING("Opening"), CLOSED("Closed");
     final String value;
 
     ContractStatus(String value) {

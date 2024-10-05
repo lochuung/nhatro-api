@@ -20,4 +20,16 @@ public class CommonUtils {
         }
         return value.setScale(4, RoundingMode.HALF_UP).stripTrailingZeros();
     }
+
+    public static boolean isNumber(Object obj) {
+        if (obj == null) return false;
+        Class<?> clazz = obj.getClass();
+        return Number.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isNewRecord(Long id) {
+        return id == null || id <= 0;
+    }
+
+
 }

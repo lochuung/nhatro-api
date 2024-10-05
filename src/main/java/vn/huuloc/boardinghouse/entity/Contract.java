@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 import vn.huuloc.boardinghouse.constant.DbConstants;
 import vn.huuloc.boardinghouse.entity.common.BaseEntity;
-import vn.huuloc.boardinghouse.entity.enums.ContractStatus;
+import vn.huuloc.boardinghouse.enums.ContractStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,14 +29,20 @@ public class Contract extends BaseEntity {
     @JoinColumn(name = "room_id", referencedColumnName = "id")
     private Room room;
 
-    @Column(name = "check_in_date")
-    private LocalDate checkInDate;
-
-    @Column(name = "check_out_date")
-    private LocalDate checkOutDate;
+    @Column(name = "start_date")
+    private LocalDate startDate;
 
     @Column(name = "number_of_people")
     private Integer numberOfPeople;
+
+    @Column(name = "checkin_electric_number")
+    private double checkinElectricNumber;
+
+    @Column(name = "checkin_water_number")
+    private double checkinWaterNumber;
+
+    @Column(name = "room_status")
+    private String roomStatus;
 
     @Column(name = "price", columnDefinition = DbConstants.DECIMAL_MONEY_DEFAULT_0)
     private BigDecimal price;

@@ -67,3 +67,9 @@ server:
 app:
   security:
     enabled: false
+  file:
+    apiKey: 7ff7fd0e-514d-4cda-acbc-66dc30adae92
+    type: dev
+api:
+  file:
+    url: http://localhost:8081

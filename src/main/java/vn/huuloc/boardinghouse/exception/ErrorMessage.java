@@ -19,6 +19,7 @@ public class ErrorMessage {
     private String code;
     private String message;
     private String description;
+    private Object errors;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime timestamp;

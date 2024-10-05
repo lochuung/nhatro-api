@@ -1,0 +1,1 @@
+REPLACE `branches` (`id`, `created_date`, `updated_date`, `address`, `name`) VALUES (1, '2024-09-24 10:57:09.000000', '2024-09-24 10:57:10.000000', 'Tại Tổ 4, ấp Gành Dầu, xã Gành Dầu, Tp. Phú Quốc, tỉnh Kiên Giang', 'Nhà trọ cao cấp Cẩm Nhung');

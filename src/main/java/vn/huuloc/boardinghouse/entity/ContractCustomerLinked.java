@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import vn.huuloc.boardinghouse.entity.common.BaseEntity;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @Getter
@@ -38,7 +40,14 @@ public class ContractCustomerLinked extends BaseEntity {
     @ColumnDefault("false")
     private boolean isOwner;
 
+    @Column(name = "stand_in_contract")
+    @ColumnDefault("false")
+    private boolean isStandInContract;
+
     @Column(name = "is_renter")
     @ColumnDefault("false")
     private boolean isRenter;
+
+    @Column(name = "checkout_date")
+    private LocalDate checkoutDate;
 }

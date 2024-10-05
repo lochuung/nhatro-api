@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import vn.huuloc.boardinghouse.entity.common.BaseEntity;
-import vn.huuloc.boardinghouse.entity.enums.InvoiceType;
+import vn.huuloc.boardinghouse.enums.InvoiceType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

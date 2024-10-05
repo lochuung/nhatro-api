@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import vn.huuloc.boardinghouse.config.DecimalSerializer;
-import vn.huuloc.boardinghouse.entity.enums.RoomStatus;
+import vn.huuloc.boardinghouse.enums.RoomStatus;
 import java.math.BigDecimal;
 
 @Builder

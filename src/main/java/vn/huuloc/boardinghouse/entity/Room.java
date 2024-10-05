@@ -6,7 +6,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SoftDelete;
 import vn.huuloc.boardinghouse.constant.DbConstants;
 import vn.huuloc.boardinghouse.entity.common.BaseEntity;
-import vn.huuloc.boardinghouse.entity.enums.RoomStatus;
+import vn.huuloc.boardinghouse.enums.RoomStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -51,7 +51,7 @@ public class Room extends BaseEntity {
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "type")
     private String type;
 
     @ManyToOne

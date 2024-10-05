@@ -1,14 +1,20 @@
 package vn.huuloc.boardinghouse.exception.advise;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
 import vn.huuloc.boardinghouse.exception.ErrorMessage;
@@ -16,12 +22,37 @@ import vn.huuloc.boardinghouse.exception.ExpectationFailedException;
 import vn.huuloc.boardinghouse.exception.UnauthorizedException;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @ResponseBody
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
+
+
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
+        logger.error(e.getMessage(), e.getCause());
+
+        List<String> errors = e.getBindingResult().getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+        ErrorMessage error = ErrorMessage.builder()
+                .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                .timestamp(LocalDateTime.now())
+                .message(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .description(errors.get(0))
+                .errors(errors)
+                .build();
+        return ResponseEntity.badRequest().body(error);
+    }
+
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<Object> badRequest(BadRequestException e) {
         logger.error("BadRequestException error", e);
@@ -36,8 +67,10 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler({BadCredentialsException.class})
-    public ResponseEntity<Object> badCredentials(BadCredentialsException e) {
+    @ExceptionHandler({BadCredentialsException.class,
+            InternalAuthenticationServiceException.class,
+            UnauthorizedException.class})
+    public ResponseEntity<Object> unauthorized(Exception e) {
         logger.error(e.getMessage(), e.getCause());
         ErrorMessage error = ErrorMessage.builder()
                 .code(String.valueOf(HttpStatus.UNAUTHORIZED.value()))
@@ -46,13 +79,6 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
                 .description(e.getMessage())
                 .build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-    }
-
-    @ExceptionHandler({UnauthorizedException.class})
-    public ResponseEntity<Object> unauthorized(UnauthorizedException e) {
-        logger.error("UnauthorizedException error", e);
-        ErrorMessage error = ErrorMessage.builder().code(String.valueOf(HttpStatus.UNAUTHORIZED.value())).timestamp(LocalDateTime.now()).description(HttpStatus.UNAUTHORIZED.getReasonPhrase()).message(e.getMessage()).build();
-        return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler({Exception.class})

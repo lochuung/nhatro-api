@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.huuloc.boardinghouse.dto.ContractDto;
 import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
 import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
-import vn.huuloc.boardinghouse.dto.request.ContractRequest;
+import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 import vn.huuloc.boardinghouse.service.ContractService;
 
@@ -27,6 +27,21 @@ public class ContractController {
     @PostMapping("/check-out")
     public ResponseEntity<ContractDto> checkOut(@RequestBody CheckoutRequest checkoutRequest) {
         return ResponseEntity.ok(contractService.checkOut(checkoutRequest));
+    }
+
+    @PostMapping("/add-member")
+    public ResponseEntity<ContractDto> addMember(@RequestBody CheckinRequest checkinRequest) {
+        return ResponseEntity.ok(contractService.addMember(checkinRequest));
+    }
+
+    @PostMapping("/leave")
+    public ResponseEntity<ContractDto> leave(@RequestBody ContractCustomerRequest request) {
+        return ResponseEntity.ok(contractService.leave(request));
+    }
+
+    @PostMapping("/change-owner")
+    public ResponseEntity<ContractDto> changeOwner(@RequestBody ContractCustomerRequest request) {
+        return ResponseEntity.ok(contractService.changeOwner(request));
     }
 
     @GetMapping("/{id}")

@@ -47,4 +47,7 @@ public class ServiceFee extends BaseEntity {
 
     @Column(name = "is_active")
     private boolean active;
+
+    @ManyToMany(mappedBy = "serviceFees")
+    private List<Contract> contracts;
 }

@@ -40,13 +40,9 @@ public class ContractCustomerLinked extends BaseEntity {
     @ColumnDefault("false")
     private boolean isOwner;
 
-    @Column(name = "stand_in_contract")
+    @Column(name = "has_left")
     @ColumnDefault("false")
-    private boolean isStandInContract;
-
-    @Column(name = "is_renter")
-    @ColumnDefault("false")
-    private boolean isRenter;
+    private boolean hasLeft;
 
     @Column(name = "checkout_date")
     private LocalDate checkoutDate;

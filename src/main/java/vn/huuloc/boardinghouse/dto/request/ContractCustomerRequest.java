@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CheckoutRequest {
+public class ContractCustomerRequest {
     @NotBlank(message = "Mã khách hàng không được để trống")
     private Long customerId;
     @NotBlank(message = "Mã hợp đồng không được để trống")

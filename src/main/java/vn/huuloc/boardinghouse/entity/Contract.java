@@ -32,6 +32,9 @@ public class Contract extends BaseEntity {
     @Column(name = "start_date")
     private LocalDate startDate;
 
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
     @Column(name = "number_of_people")
     private Integer numberOfPeople;
 
@@ -56,6 +59,14 @@ public class Contract extends BaseEntity {
 
     @Column(name = "note")
     private String note;
+
+    @ManyToMany
+    @JoinTable(
+            name = "contract_service_fees",
+            joinColumns = @JoinColumn(name = "contract_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_fee_id")
+    )
+    private List<ServiceFee> serviceFees;
 
     @Column(name = "code", unique = true)
     @UuidGenerator(style = UuidGenerator.Style.TIME)

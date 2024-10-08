@@ -20,6 +20,7 @@ import java.util.List;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CheckinRequest {
+    Long contractId;
     @NotNull(message = "Mã phòng không được để trống")
     private Long roomId;
     @NotNull(message = "Ngày bắt đầu không được để trống")

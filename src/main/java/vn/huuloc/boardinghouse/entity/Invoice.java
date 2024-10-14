@@ -8,6 +8,7 @@ import vn.huuloc.boardinghouse.enums.InvoiceType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static vn.huuloc.boardinghouse.constant.DbConstants.*;
@@ -51,6 +52,14 @@ public class Invoice extends BaseEntity {
     @Column(name = "new_water_number")
     private double newWaterNumber;
 
+    @Column(name = "electricity_unit_price", columnDefinition = DECIMAL_MONEY_DEFAULT_0)
+    @ColumnDefault("0")
+    private BigDecimal electricityUnitPrice;
+
+    @Column(name = "water_unit_price", columnDefinition = DECIMAL_MONEY_DEFAULT_0)
+    @ColumnDefault("0")
+    private BigDecimal waterUnitPrice;
+
     @Column(name = "usage_electricity_number")
     private double usageElectricityNumber;
 
@@ -84,7 +93,7 @@ public class Invoice extends BaseEntity {
             joinColumns = @JoinColumn(name = "invoice_id"),
             inverseJoinColumns = @JoinColumn(name = "service_fee_id")
     )
-    private List<ServiceFee> serviceFees;
+    private List<ServiceFee> serviceFees = new ArrayList<>();
 
     @Column(name = "print_date")
     private LocalDateTime printDate;

@@ -1,35 +1,47 @@
 package vn.huuloc.boardinghouse.controller.api;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.huuloc.boardinghouse.dto.InvoiceDto;
+import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
+import vn.huuloc.boardinghouse.service.InvoiceService;
 
 @RestController
 @RequestMapping("/api/v1/invoices")
 @SecurityRequirement(name = "bearerAuth")
+@RequiredArgsConstructor
 public class InvoiceController {
+    private final InvoiceService invoiceService;
 
     @PostMapping
-    public String create() {
-        return "Create invoice";
+    public ResponseEntity<InvoiceDto> create(@Valid @RequestBody InvoiceRequest invoiceRequest) {
+        return ResponseEntity.ok(invoiceService.create(invoiceRequest));
     }
 
     @PutMapping
-    public String update() {
-        return "Update invoice";
+    public ResponseEntity<InvoiceDto> update(@Valid @RequestBody InvoiceRequest invoiceRequest) {
+        return ResponseEntity.ok(invoiceService.update(invoiceRequest));
     }
 
-    @DeleteMapping
-    public String delete() {
-        return "Delete invoice";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        invoiceService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public String get(@PathVariable("id") Long id) {
-        return "Get invoice " + id;
+    public ResponseEntity<InvoiceDto> getInvoice(@PathVariable Long id) {
+        return ResponseEntity.ok(invoiceService.findById(id));
     }
 
-    @GetMapping
-    public String list() {
-        return "List invoices";
+    @PostMapping("/search")
+    public ResponseEntity<Page<InvoiceDto>> search(@RequestBody SearchRequest searchRequest) {
+        return ResponseEntity.ok(invoiceService.search(searchRequest));
     }
+
 }

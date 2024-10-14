@@ -7,10 +7,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.huuloc.boardinghouse.dto.SettingDto;
-import vn.huuloc.boardinghouse.dto.mapper.SettingMapper;
 import vn.huuloc.boardinghouse.entity.settings.Setting;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
 import vn.huuloc.boardinghouse.repository.SettingRepository;
+import vn.huuloc.boardinghouse.service.SettingCacheService;
 import vn.huuloc.boardinghouse.service.SettingService;
 
 import java.util.*;
@@ -20,27 +20,24 @@ import java.util.stream.Collectors;
 @Service
 public class SettingServiceImpl implements SettingService {
 
-    public static final String ALL_SETTINGS_CACHE_KEY = "setting";
+    @Autowired
+    private SettingCacheService settingCacheService;
+
     @Autowired
     private SettingRepository settingRepository;
 
-    @Cacheable(ALL_SETTINGS_CACHE_KEY)
-    @Override
-    public Map<String, SettingDto> getAll() {
-        List<SettingDto> settings = SettingMapper.INSTANCE.entityListDto2List(settingRepository.findAll());
-        return Optional.ofNullable(settings).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(SettingDto::getKey, Function.identity(), (o, n) -> o));
-    }
-
-
-
     @Override
     public String getSetting(String key) {
-        return Optional.ofNullable(getAll().get(key)).map(SettingDto::getValue).orElse(null);
+        return Optional.ofNullable(settingCacheService.getAllSettings().get(key))
+                .map(SettingDto::getValue)
+                .orElse(null);
     }
 
     @Override
     public Map<String, String> getSetting() {
-        return Optional.ofNullable(getAll()).orElse(new HashMap<>()).entrySet()
+        return Optional.ofNullable(settingCacheService.getAllSettings())
+                .orElse(new HashMap<>())
+                .entrySet()
                 .stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -49,7 +46,7 @@ public class SettingServiceImpl implements SettingService {
     }
 
     @Override
-    @CacheEvict(value = ALL_SETTINGS_CACHE_KEY, allEntries = true)
+    @CacheEvict(value = SettingCacheService.ALL_SETTINGS_CACHE_KEY, allEntries = true)
     @Transactional
     public void updateSetting(String key, String value) {
         Setting setting = settingRepository.findByKey(key);
@@ -62,7 +59,7 @@ public class SettingServiceImpl implements SettingService {
     }
 
     @Override
-    @CacheEvict(value = ALL_SETTINGS_CACHE_KEY, allEntries = true)
+    @CacheEvict(value = SettingCacheService.ALL_SETTINGS_CACHE_KEY, allEntries = true)
     @Transactional
     public void updateSettings(List<SettingDto> settings) {
         if (CollectionUtils.isEmpty(settings)) {
@@ -70,7 +67,10 @@ public class SettingServiceImpl implements SettingService {
         }
         List<String> keys = settings.stream().map(SettingDto::getKey).toList();
         List<Setting> existingList = settingRepository.findByKeyIn(keys);
-        Map<String, Setting> existingMap = Optional.ofNullable(existingList).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(Setting::getKey, Function.identity(), (o, n) -> o));
+        Map<String, Setting> existingMap = Optional.ofNullable(existingList)
+                .orElse(new ArrayList<>())
+                .stream()
+                .collect(Collectors.toMap(Setting::getKey, Function.identity(), (o, n) -> o));
         List<Setting> newSettings = new ArrayList<>();
         for (SettingDto s : settings) {
             Setting newSetting = existingMap.get(s.getKey());

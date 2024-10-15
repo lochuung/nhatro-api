@@ -27,7 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<CustomerDto> findAll() {
         List<Customer> customers = customerRepository.findAll();
-        return CustomerMapper.INSTANCE.toDtos(customers);
+        return CustomerMapper.INSTANCE.toDto(customers);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService {
         Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(),
                 searchRequest.getSize());
         List<Customer> customers = customerRepository.findAll(searchSpec, pageable).getContent();
-        return CustomerMapper.INSTANCE.toDtos(customers);
+        return CustomerMapper.INSTANCE.toDto(customers);
     }
 
     @Override

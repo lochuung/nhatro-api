@@ -10,6 +10,7 @@ import vn.huuloc.boardinghouse.enums.ContractStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -26,4 +27,5 @@ public class ContractDto extends BaseDto {
     private BigDecimal deposit;
     private ContractStatus status;
     private String note;
+    private List<CustomerDto> members;
 }

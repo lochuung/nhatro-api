@@ -7,6 +7,8 @@ import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
 import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 
+import java.io.IOException;
+
 public interface ContractService {
     ContractDto checkIn(CheckinRequest contractRequest);
 
@@ -21,4 +23,6 @@ public interface ContractService {
     ContractDto leave(ContractCustomerRequest request);
 
     ContractDto addMember(CheckinRequest checkinRequest);
+
+    byte[] printContract(Long id) throws IOException;
 }

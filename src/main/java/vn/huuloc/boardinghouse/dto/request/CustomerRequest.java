@@ -25,7 +25,7 @@ public class CustomerRequest {
     private String name;
     private String name2;
     @NotBlank(message = "Ngày sinh không được để trống")
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Ngày sinh không hợp lệ")
+    @Pattern(regexp = "^\\d{2}/\\d{2}/\\d{4}$", message = "Ngày sinh không hợp lệ")
     private String birthday;
     @NotBlank(message = "Địa chỉ không được để trống")
     private String address;
@@ -37,6 +37,7 @@ public class CustomerRequest {
     @NotBlank(message = "Nơi cấp không được để trống")
     private String idPlace;
     @NotBlank(message = "Ngày cấp không được để trống")
+    @Pattern(regexp = "^\\d{2}/\\d{2}/\\d{4}$", message = "Ngày cấp không hợp lệ")
     private String idDate;
     private String bankName;
     private String bankNumber;

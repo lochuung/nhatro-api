@@ -12,7 +12,7 @@ import java.util.List;
 public interface CustomerMapper {
     CustomerMapper INSTANCE = Mappers.getMapper(CustomerMapper.class);
 
-    List<CustomerDto> toDtos(List<Customer> customers);
+    List<CustomerDto> toDto(List<Customer> customers);
 
     CustomerDto toDto(Customer customer);
 

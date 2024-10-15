@@ -1,11 +1,5 @@
 package vn.huuloc.boardinghouse.service.impl;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.auth.Credentials;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.storage.*;
-import com.google.firebase.FirebaseApp;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

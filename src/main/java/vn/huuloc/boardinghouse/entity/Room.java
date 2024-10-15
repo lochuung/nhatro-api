@@ -1,5 +1,6 @@
 package vn.huuloc.boardinghouse.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -59,5 +60,6 @@ public class Room extends BaseEntity {
     private Branch branch;
 
     @OneToMany(mappedBy = "room")
+    @JsonIgnore
     private List<Contract> contracts;
 }

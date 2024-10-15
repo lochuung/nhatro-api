@@ -2,6 +2,7 @@ package vn.huuloc.boardinghouse.dto.request;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -37,5 +38,7 @@ public class CheckinRequest {
     private BigDecimal deposit;
     private String note;
 
+    @NotNull(message = "Danh sách khách hàng không được để trống")
+    @Valid
     private List<CustomerRequest> customers;
 }

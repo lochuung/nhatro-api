@@ -1,15 +1,11 @@
 package vn.huuloc.boardinghouse.service.impl;
 
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import vn.huuloc.boardinghouse.constant.SettingConstants;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.ServiceFeeDto;

@@ -4,12 +4,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 import vn.huuloc.boardinghouse.service.InvoiceService;
+
+import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/invoices")
@@ -42,6 +47,19 @@ public class InvoiceController {
     @PostMapping("/search")
     public ResponseEntity<Page<InvoiceDto>> search(@RequestBody SearchRequest searchRequest) {
         return ResponseEntity.ok(invoiceService.search(searchRequest));
+    }
+
+
+    @GetMapping(value = "/print/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> printInvoice(@PathVariable Long id) throws IOException {
+        byte[] pdfBytes = invoiceService.print(id);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("filename", "invoice-" + UUID.randomUUID().toString() + ".pdf");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
     }
 
 }

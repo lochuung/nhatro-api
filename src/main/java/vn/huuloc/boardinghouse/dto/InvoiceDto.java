@@ -1,15 +1,11 @@
 package vn.huuloc.boardinghouse.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 import vn.huuloc.boardinghouse.config.DecimalSerializer;
 import vn.huuloc.boardinghouse.enums.InvoiceType;
 
@@ -47,7 +43,9 @@ public class InvoiceDto extends BaseDto {
     private BigDecimal paidAmount;
     private List<ServiceFeeDto> serviceFees;
     private LocalDateTime printDate;
-    private LocalDateTime dueDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private String totalAmountInWords;
     private String note;
     private String adminNote;
     private InvoiceType type;

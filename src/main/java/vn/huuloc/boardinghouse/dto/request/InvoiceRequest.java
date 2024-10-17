@@ -39,8 +39,10 @@ public class InvoiceRequest {
     private Double newWaterNumber;
     private BigDecimal paidAmount = BigDecimal.ZERO;
     private List<ServiceFeeDto> serviceFees = List.of();
+    @NotNull(message = "Thời gian bắt đầu không được để trống")
+    private LocalDateTime startDate;
     @NotNull(message = "Thời gian hết hạn không được để trống")
-    private LocalDateTime dueDate;
+    private LocalDateTime endDate;
     private String note;
     private String adminNote;
     private InvoiceType type = InvoiceType.MONTHLY;

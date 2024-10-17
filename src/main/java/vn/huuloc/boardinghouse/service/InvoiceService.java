@@ -5,6 +5,8 @@ import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 
+import java.io.IOException;
+
 public interface InvoiceService {
     InvoiceDto create(InvoiceRequest invoiceRequest);
 
@@ -15,4 +17,6 @@ public interface InvoiceService {
     InvoiceDto findById(Long id);
 
     Page<InvoiceDto> search(SearchRequest searchRequest);
+
+    byte[] print(Long id) throws IOException;
 }

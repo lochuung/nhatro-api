@@ -302,6 +302,7 @@ public class ContractServiceImpl implements ContractService {
                 .stream().map(ContractCustomerLinked::getCustomer).toList();
         ContractDto contractDto = ContractMapper.INSTANCE.toDto(contract);
         contractDto.setMembers(CustomerMapper.INSTANCE.toDto(members));
+        contractDto.setOwner(CustomerMapper.INSTANCE.toDto(contractCustomerLinkedRepository.findOwnerByContractId(id).getCustomer()));
         return contractDto;
     }
 

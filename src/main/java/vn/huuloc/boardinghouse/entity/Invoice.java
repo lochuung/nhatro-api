@@ -87,7 +87,7 @@ public class Invoice extends BaseEntity {
     @ColumnDefault("0")
     private BigDecimal paidAmount;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "invoice_service_fees",
             joinColumns = @JoinColumn(name = "invoice_id"),
@@ -98,8 +98,11 @@ public class Invoice extends BaseEntity {
     @Column(name = "print_date")
     private LocalDateTime printDate;
 
-    @Column(name = "due_date")
-    private LocalDateTime dueDate;
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
 
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;

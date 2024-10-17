@@ -27,5 +27,6 @@ public class ContractDto extends BaseDto {
     private BigDecimal deposit;
     private ContractStatus status;
     private String note;
+    private CustomerDto owner;
     private List<CustomerDto> members;
 }

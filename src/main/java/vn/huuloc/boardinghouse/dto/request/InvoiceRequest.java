@@ -37,6 +37,8 @@ public class InvoiceRequest {
     @NotNull(message = "Số nước mới không được để trống")
     @Min(value = 0, message = "Số nước mới phải lớn hơn hoặc bằng 0")
     private Double newWaterNumber;
+    private BigDecimal electricityUnitPrice;
+    private BigDecimal waterUnitPrice;
     private BigDecimal paidAmount = BigDecimal.ZERO;
     private List<ServiceFeeDto> serviceFees = List.of();
     @NotNull(message = "Thời gian bắt đầu không được để trống")

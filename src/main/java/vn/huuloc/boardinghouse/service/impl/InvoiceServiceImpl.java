@@ -27,15 +27,13 @@ import vn.huuloc.boardinghouse.service.InvoiceService;
 import vn.huuloc.boardinghouse.service.PdfService;
 import vn.huuloc.boardinghouse.service.SettingService;
 import vn.huuloc.boardinghouse.util.CommonUtils;
+import vn.huuloc.boardinghouse.util.InvoiceUtils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 @RequiredArgsConstructor
@@ -69,13 +67,10 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         Invoice invoice = InvoiceMapper.INSTANCE.toEntity(invoiceRequest);
         invoice.setContract(contract);
-        invoice.setWaterUnitPrice(BigDecimal.valueOf(waterUnitPrice));
-        invoice.setElectricityUnitPrice(BigDecimal.valueOf(electricUnitPrice));
-
-        invoice.setElectricityAmount(BigDecimal.valueOf((invoice.getNewElectricityNumber() - invoice.getOldElectricityNumber())
-                * electricUnitPrice));
-        invoice.setWaterAmount(BigDecimal.valueOf((invoice.getNewWaterNumber() - invoice.getOldWaterNumber())
-                * waterUnitPrice));
+        invoice.setWaterUnitPrice(invoice.getWaterUnitPrice() == null ? BigDecimal.valueOf(waterUnitPrice) : invoice.getWaterUnitPrice());
+        invoice.setElectricityUnitPrice(invoice.getElectricityUnitPrice() == null ? BigDecimal.valueOf(electricUnitPrice) : invoice.getElectricityUnitPrice());
+        invoice.setElectricityAmount(InvoiceUtils.calculateElectricityAmount(invoice));
+        invoice.setWaterAmount(InvoiceUtils.calculateWaterAmount(invoice));
 
         BigDecimal total = invoice.getElectricityAmount().add(invoice.getWaterAmount());
 
@@ -104,8 +99,8 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (invoiceRequest.getType() == InvoiceType.CHECK_OUT) {
             int dayOfMonth = LocalDateTime.now().getDayOfMonth();
             if (invoiceRequest.getCustomAmount() == null) {
-                BigDecimal numberOfMonthsDecimal = BigDecimal.valueOf(dayOfMonth);
-                BigDecimal monthlyPrice = contract.getPrice().multiply(numberOfMonthsDecimal).multiply(BigDecimal.valueOf(1.0 / 30));
+                BigDecimal rateOfMonthsDecimal = BigDecimal.valueOf(dayOfMonth * 1.0 / 30);
+                BigDecimal monthlyPrice = contract.getPrice().multiply(rateOfMonthsDecimal);
                 total = total.add(monthlyPrice);
                 invoice.setTotalAmount(total);
             } else {
@@ -137,10 +132,11 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setUsageWaterNumber(invoice.getNewWaterNumber() - invoice.getOldWaterNumber());
         invoice.setStartDate(invoiceRequest.getStartDate());
         invoice.setEndDate(invoiceRequest.getEndDate());
-        invoice.setElectricityAmount(BigDecimal.valueOf((invoice.getNewElectricityNumber() - invoice.getOldElectricityNumber())
-                * electricUnitPrice));
-        invoice.setWaterAmount(BigDecimal.valueOf((invoice.getNewWaterNumber() - invoice.getOldWaterNumber())
-                * waterUnitPrice));
+
+        invoice.setElectricityUnitPrice(invoice.getElectricityUnitPrice() == null ? BigDecimal.valueOf(electricUnitPrice) : invoice.getElectricityUnitPrice());
+        invoice.setWaterUnitPrice(invoice.getWaterUnitPrice() == null ? BigDecimal.valueOf(waterUnitPrice) : invoice.getWaterUnitPrice());
+        invoice.setElectricityAmount(InvoiceUtils.calculateElectricityAmount(invoice));
+        invoice.setWaterAmount(InvoiceUtils.calculateWaterAmount(invoice));
 
 
         BigDecimal total = invoice.getElectricityAmount().add(invoice.getWaterAmount());

@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
 import vn.huuloc.boardinghouse.entity.Invoice;
-import vn.huuloc.boardinghouse.util.ContractUtils;
+import vn.huuloc.boardinghouse.util.CurrencyUtils;
 
 import java.math.BigDecimal;
 
@@ -28,6 +28,6 @@ public interface InvoiceMapper {
     InvoiceDto toDto(Invoice invoice);
 
     default String getTienChu(BigDecimal number) {
-        return ContractUtils.getTienChu(number);
+        return CurrencyUtils.getTienChu(number);
     }
 }

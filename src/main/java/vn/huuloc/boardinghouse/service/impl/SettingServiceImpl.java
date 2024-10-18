@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.huuloc.boardinghouse.dto.SettingDto;
+import vn.huuloc.boardinghouse.dto.mapper.SettingMapper;
 import vn.huuloc.boardinghouse.entity.settings.Setting;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
 import vn.huuloc.boardinghouse.repository.SettingRepository;
@@ -25,6 +26,11 @@ public class SettingServiceImpl implements SettingService {
 
     @Autowired
     private SettingRepository settingRepository;
+
+    @Override
+    public Map<String, SettingDto> getAllSettings() {
+        return settingCacheService.getAllSettings();
+    }
 
     @Override
     public String getSetting(String key) {

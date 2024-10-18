@@ -20,7 +20,6 @@ public class RoomRequest {
     @NotBlank(message = "Tên phòng không được để trống")
     private String name;
     private String description;
-    @JsonSerialize(using = DecimalSerializer.class)
     @NotNull(message = "Giá phòng không được để trống")
     @Min(value = 0, message = "Giá phòng phải lớn hơn 0")
     private BigDecimal price;

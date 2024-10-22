@@ -57,6 +57,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void delete(Long id) {
         Room room = roomRepository.findById(id).orElseThrow(() -> BadRequestException.message("Không tìm thấy phòng trọ"));
+        if (room.getStatus() == RoomStatus.RENTED) {
+            throw BadRequestException.message("Không thể xóa phòng trọ đang cho thuê");
+        }
         roomRepository.delete(room);
     }
 

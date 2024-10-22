@@ -12,10 +12,12 @@ import vn.huuloc.boardinghouse.dto.sort.filter.RoomSearchRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.SearchSpecification;
 import vn.huuloc.boardinghouse.entity.Branch;
 import vn.huuloc.boardinghouse.entity.Room;
+import vn.huuloc.boardinghouse.enums.ContractStatus;
 import vn.huuloc.boardinghouse.enums.RoomDisplayType;
 import vn.huuloc.boardinghouse.enums.RoomStatus;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
 import vn.huuloc.boardinghouse.repository.BranchRepository;
+import vn.huuloc.boardinghouse.repository.ContractRepository;
 import vn.huuloc.boardinghouse.repository.RoomRepository;
 import vn.huuloc.boardinghouse.service.RoomService;
 
@@ -34,6 +36,7 @@ public class RoomServiceImpl implements RoomService {
 
         Room room = RoomMapper.INSTANCE.toEntity(roomRequest);
         room.setBranch(branch);
+        room.setStatus(RoomStatus.AVAILABLE);
         return RoomMapper.INSTANCE.toDto(roomRepository.save(room));
     }
 
@@ -47,6 +50,10 @@ public class RoomServiceImpl implements RoomService {
         room.setName(roomRequest.getName());
         room.setDescription(roomRequest.getDescription());
         room.setPrice(roomRequest.getPrice());
+        if (!room.getStatus().equals(roomRequest.getStatus()) &&
+                room.getContracts().stream().anyMatch(contract -> contract.getStatus().equals(ContractStatus.OPENING))) {
+            throw BadRequestException.message("Không thể sửa trạng thái phòng trọ đang cho thuê");
+        }
         room.setStatus(roomRequest.getStatus());
         room.setCapacity(roomRequest.getCapacity());
         room.setType(roomRequest.getType());
@@ -57,7 +64,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void delete(Long id) {
         Room room = roomRepository.findById(id).orElseThrow(() -> BadRequestException.message("Không tìm thấy phòng trọ"));
-        if (room.getStatus() == RoomStatus.RENTED) {
+        if (room.getContracts().stream().anyMatch(contract -> contract.getStatus().equals(ContractStatus.OPENING))) {
             throw BadRequestException.message("Không thể xóa phòng trọ đang cho thuê");
         }
         roomRepository.delete(room);

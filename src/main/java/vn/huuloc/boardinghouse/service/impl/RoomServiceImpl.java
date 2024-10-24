@@ -11,6 +11,7 @@ import vn.huuloc.boardinghouse.dto.response.RoomResponse;
 import vn.huuloc.boardinghouse.dto.sort.filter.RoomSearchRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.SearchSpecification;
 import vn.huuloc.boardinghouse.entity.Branch;
+import vn.huuloc.boardinghouse.entity.Contract;
 import vn.huuloc.boardinghouse.entity.Room;
 import vn.huuloc.boardinghouse.enums.ContractStatus;
 import vn.huuloc.boardinghouse.enums.RoomDisplayType;

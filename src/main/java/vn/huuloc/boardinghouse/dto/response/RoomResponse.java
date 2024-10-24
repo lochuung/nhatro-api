@@ -25,5 +25,5 @@ public class RoomResponse extends BaseDto {
     private Integer capacity;
     private String type;
     private BranchResponse branch;
-    private List<ContractResponse> contracts;
+    private Integer numberOfPeople;
 }

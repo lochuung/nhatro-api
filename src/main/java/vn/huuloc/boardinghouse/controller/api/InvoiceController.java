@@ -8,9 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 import vn.huuloc.boardinghouse.service.InvoiceService;
 
 import java.io.IOException;

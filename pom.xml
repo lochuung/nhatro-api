@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.3</version>
+        <version>3.3.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>vn.huuloc</groupId>
@@ -57,6 +57,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.thanhdat2599</groupId>
+            <artifactId>sort.filter</artifactId>
+            <version>1.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -191,10 +196,8 @@
     </build>
     <repositories>
         <repository>
-            <id>maven_central</id>
-            <name>Maven Central</name>
-            <url>https://repo.maven.apache.org/maven2/</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
-
 </project>

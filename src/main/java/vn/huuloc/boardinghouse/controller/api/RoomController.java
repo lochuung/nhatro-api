@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import vn.huuloc.boardinghouse.dto.request.RoomRequest;
 import vn.huuloc.boardinghouse.dto.response.RoomResponse;
 import vn.huuloc.boardinghouse.dto.sort.filter.RoomSearchRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 import vn.huuloc.boardinghouse.service.RoomService;
 import vn.huuloc.boardinghouse.util.ResponseUtils;
 

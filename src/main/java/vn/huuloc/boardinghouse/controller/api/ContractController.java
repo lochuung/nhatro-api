@@ -8,11 +8,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.ContractDto;
 import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
 import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
 import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 import vn.huuloc.boardinghouse.service.ContractService;
 
 import java.io.IOException;

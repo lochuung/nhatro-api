@@ -1,9 +1,9 @@
 package vn.huuloc.boardinghouse.service;
 
 import org.springframework.data.domain.Page;
+import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 
 import java.io.IOException;
 

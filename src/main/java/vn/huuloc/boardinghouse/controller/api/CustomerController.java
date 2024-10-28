@@ -5,9 +5,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.CustomerDto;
 import vn.huuloc.boardinghouse.dto.request.CustomerRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 import vn.huuloc.boardinghouse.service.CustomerService;
 import vn.huuloc.boardinghouse.util.ResponseUtils;
 

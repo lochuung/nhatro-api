@@ -17,7 +17,6 @@ import vn.huuloc.boardinghouse.exception.BadRequestException;
 import vn.huuloc.boardinghouse.exception.UnauthorizedException;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Service
 public class AuthenticationService {

@@ -234,13 +234,13 @@
                 <div class="company__detail">
                     <h2 class="detail-title" th:text="${invoice.contract.room.branch.name}">Nhà 1 test</h2>
                     <div class="detail-info">
-                        Địa chỉ/Address: <span th:text="${invoice.contract.room.branch.address}">111111, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh</span>
+                        Địa chỉ/Address: <span th:text="${invoice.contract.room.branch.address}"></span>
                     </div>
                     <div class="detail-info">
                         SĐT/Phone: <span th:text="${invoice.contract.room.branch.phone}">0343316771</span>
                     </div>
                     <div class="invoice__date-issue text-nowrap">
-                        Ngày in / Statement Date: <span th:text="${#dates.format(invoice.printDate, 'dd/MM/yyyy')}">15/10/2024</span>
+                        Ngày in / Statement Date: <span th:text="${#temporals.format(invoice.printDate, 'dd/MM/yyyy')}">15/10/2024</span>
                     </div>
                 </div>
             </td>
@@ -363,6 +363,10 @@
         <!-- Total Amounts -->
         </tbody>
         <tbody>
+        <tr>
+            <td colspan="6" class="text-left"><b>Giảm giá/Discount</b></td>
+            <td><b th:text="${#numbers.formatDecimal(invoice.discount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b></td>
+        </tr>
         <tr>
             <td colspan="6" class="text-left"><b>Tổng cộng/Total amount</b></td>
             <td><b th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b></td>

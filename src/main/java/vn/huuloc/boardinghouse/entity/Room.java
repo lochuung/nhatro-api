@@ -22,7 +22,9 @@ import static vn.huuloc.boardinghouse.util.CommonUtils.defaultBigDecimalIfNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "rooms")
+@Table(name = "rooms", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"code", "branch_id"})
+})
 @SoftDelete
 public class Room extends BaseEntity {
     @PrePersist
@@ -34,6 +36,9 @@ public class Room extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "code", nullable = false)
+    private String code;
 
     @Column(name = "name", nullable = false)
     private String name;

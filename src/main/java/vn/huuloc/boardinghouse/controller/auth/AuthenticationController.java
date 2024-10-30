@@ -1,13 +1,9 @@
 package vn.huuloc.boardinghouse.controller.auth;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.huuloc.boardinghouse.service.auth.AuthenticationService;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")

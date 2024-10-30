@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import vn.huuloc.boardinghouse.entity.common.BaseEntity;
 
-import java.util.List;
-
 
 @Getter
 @Setter

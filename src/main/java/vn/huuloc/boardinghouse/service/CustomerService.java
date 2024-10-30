@@ -1,8 +1,8 @@
 package vn.huuloc.boardinghouse.service;
 
+import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.CustomerDto;
 import vn.huuloc.boardinghouse.dto.request.CustomerRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.SearchRequest;
 
 import java.util.List;
 

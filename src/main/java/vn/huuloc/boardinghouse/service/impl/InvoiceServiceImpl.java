@@ -92,6 +92,9 @@ public class InvoiceServiceImpl implements InvoiceService {
             total = total.add(contract.getPrice());
 
 
+            invoice.setSubTotal(total);
+            invoice.setDiscount(invoiceRequest.getDiscount());
+            total = total.subtract(invoiceRequest.getDiscount());
             invoice.setTotalAmount(total);
             invoice.setEndDate(invoiceRequest.getEndDate());
             return InvoiceMapper.INSTANCE.toDto(invoiceRepository.save(invoice));
@@ -102,10 +105,12 @@ public class InvoiceServiceImpl implements InvoiceService {
                 BigDecimal rateOfMonthsDecimal = BigDecimal.valueOf(dayOfMonth * 1.0 / 30);
                 BigDecimal monthlyPrice = contract.getPrice().multiply(rateOfMonthsDecimal);
                 total = total.add(monthlyPrice);
-                invoice.setTotalAmount(total);
             } else {
                 total = total.add(invoiceRequest.getCustomAmount());
             }
+            invoice.setSubTotal(total);
+            invoice.setDiscount(invoiceRequest.getDiscount());
+            total = total.subtract(invoiceRequest.getDiscount());
             invoice.setTotalAmount(total);
             invoice.setCustomAmount(invoiceRequest.getCustomAmount());
             return InvoiceMapper.INSTANCE.toDto(invoiceRepository.save(invoice));
@@ -153,6 +158,9 @@ public class InvoiceServiceImpl implements InvoiceService {
                 total = total.add(serviceFee.getUnitPrice());
             }
 
+            invoice.setSubTotal(total);
+            invoice.setDiscount(invoiceRequest.getDiscount());
+            total = total.subtract(invoiceRequest.getDiscount());
             invoice.setTotalAmount(total);
             return InvoiceMapper.INSTANCE.toDto(invoiceRepository.save(invoice));
         }
@@ -162,11 +170,13 @@ public class InvoiceServiceImpl implements InvoiceService {
                 BigDecimal numberOfMonthsDecimal = BigDecimal.valueOf(dayOfMonth);
                 BigDecimal monthlyPrice = invoice.getContract().getPrice().multiply(numberOfMonthsDecimal).multiply(BigDecimal.valueOf(1.0 / 30));
                 total = total.add(monthlyPrice);
-                invoice.setTotalAmount(total);
             } else {
                 total = total.add(invoiceRequest.getCustomAmount());
             }
 
+            invoice.setSubTotal(total);
+            invoice.setDiscount(invoiceRequest.getDiscount());
+            total = total.subtract(invoiceRequest.getDiscount());
             invoice.setTotalAmount(total);
             invoice.setCustomAmount(invoiceRequest.getCustomAmount());
             return InvoiceMapper.INSTANCE.toDto(invoiceRepository.save(invoice));
@@ -201,7 +211,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public byte[] print(Long id) throws IOException {
-        InvoiceDto invoiceDto = findById(id);
+        Invoice invoice = invoiceRepository.findById(id)
+                .orElseThrow(() -> BadRequestException.message("Hóa đơn không tồn tại"));
+        invoice.setPrintDate(LocalDateTime.now());
+        invoice = invoiceRepository.save(invoice);
+        InvoiceDto invoiceDto = InvoiceMapper.INSTANCE.toDto(invoice);
+        invoiceDto.setContract(contractService.findById(invoice.getContract().getId()));
 
         // Process the HTML template with Thymeleaf
         Context context = new Context();

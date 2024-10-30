@@ -3,6 +3,8 @@ package vn.huuloc.boardinghouse.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 import vn.huuloc.boardinghouse.entity.common.BaseEntity;
 import vn.huuloc.boardinghouse.enums.InvoiceType;
 
@@ -10,8 +12,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import static vn.huuloc.boardinghouse.constant.DbConstants.*;
+import static vn.huuloc.boardinghouse.constant.DbConstants.DECIMAL_MONEY_DEFAULT_0;
 import static vn.huuloc.boardinghouse.util.CommonUtils.defaultBigDecimalIfNull;
 
 @Data
@@ -35,6 +38,10 @@ public class Invoice extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @UuidGenerator
+    @Column(name = "code", unique = true, updatable = false, nullable = false)
+    private UUID code;
 
     @ManyToOne
     @JoinColumn(name = "contract_id", referencedColumnName = "id")
@@ -77,6 +84,14 @@ public class Invoice extends BaseEntity {
     @Column(name = "total_service_fee", columnDefinition = DECIMAL_MONEY_DEFAULT_0)
     @ColumnDefault("0")
     private BigDecimal totalServiceFee;
+
+    @Column(name = "sub_total", columnDefinition = DECIMAL_MONEY_DEFAULT_0)
+    @ColumnDefault("0")
+    private BigDecimal subTotal;
+
+    @Column(name = "discount", columnDefinition = DECIMAL_MONEY_DEFAULT_0)
+    @ColumnDefault("0")
+    private BigDecimal discount;
 
 
     @Column(name = "total_amount", columnDefinition = DECIMAL_MONEY_DEFAULT_0)

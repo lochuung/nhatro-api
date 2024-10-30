@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.huuloc.boardinghouse.dto.SettingDto;
 import vn.huuloc.boardinghouse.service.SettingService;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController

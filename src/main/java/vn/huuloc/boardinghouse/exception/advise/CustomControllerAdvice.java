@@ -38,7 +38,7 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
                                                                   HttpHeaders headers,
                                                                   HttpStatusCode status,
                                                                   WebRequest request) {
-        logger.error(e.getMessage(), e.getCause());
+        log.error(e.getMessage(), e.getCause());
 
         List<String> errors = e.getBindingResult().getAllErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -55,14 +55,14 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<Object> badRequest(BadRequestException e) {
-        logger.error("BadRequestException error", e);
+        log.error("Bad request error: {}", e.getMessage());
         ErrorMessage error = ErrorMessage.builder().code(String.valueOf(HttpStatus.BAD_REQUEST.value())).timestamp(LocalDateTime.now()).description(e.getMessage()).message(e.getMessage()).build();
         return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler({ExpectationFailedException.class})
     public ResponseEntity<Object> failedException(BadRequestException e) {
-        logger.error("ExpectationFailedException error", e);
+        log.error("ExpectationFailedException error: {}", e.getMessage());
         ErrorMessage error = ErrorMessage.builder().code(String.valueOf(HttpStatus.EXPECTATION_FAILED.value())).timestamp(LocalDateTime.now()).description(e.getMessage()).message(e.getMessage()).build();
         return ResponseEntity.badRequest().body(error);
     }
@@ -71,7 +71,7 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
             InternalAuthenticationServiceException.class,
             UnauthorizedException.class})
     public ResponseEntity<Object> unauthorized(Exception e) {
-        logger.error(e.getMessage(), e.getCause());
+        log.error("Unauthorized error: {}", e.getMessage());
         ErrorMessage error = ErrorMessage.builder()
                 .code(String.valueOf(HttpStatus.UNAUTHORIZED.value()))
                 .message(HttpStatus.UNAUTHORIZED.getReasonPhrase())
@@ -83,7 +83,7 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> ex(Exception e) {
-        logger.error("server error", e);
+        log.error("server error", e);
         ErrorMessage error = ErrorMessage.builder().code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value())).message(e.getMessage()).timestamp(LocalDateTime.now()).description(e.getMessage()).build();
         return ResponseEntity.internalServerError().body(error);
     }

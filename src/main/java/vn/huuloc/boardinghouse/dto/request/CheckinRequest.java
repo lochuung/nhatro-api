@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.huuloc.boardinghouse.dto.CustomerDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

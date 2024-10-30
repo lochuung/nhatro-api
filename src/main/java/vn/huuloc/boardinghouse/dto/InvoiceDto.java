@@ -38,6 +38,10 @@ public class InvoiceDto extends BaseDto {
     @JsonSerialize(using = DecimalSerializer.class)
     private BigDecimal totalServiceFee;
     @JsonSerialize(using = DecimalSerializer.class)
+    private BigDecimal subTotal;
+    @JsonSerialize(using = DecimalSerializer.class)
+    private BigDecimal discount;
+    @JsonSerialize(using = DecimalSerializer.class)
     private BigDecimal totalAmount;
     @JsonSerialize(using = DecimalSerializer.class)
     private BigDecimal paidAmount;

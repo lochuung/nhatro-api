@@ -6,7 +6,6 @@ import vn.huuloc.boardinghouse.dto.BaseDto;
 import vn.huuloc.boardinghouse.enums.RoomStatus;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -18,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RoomResponse extends BaseDto {
     private Long id;
+    private String code;
     private String name;
     private String description;
     private BigDecimal price;

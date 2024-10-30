@@ -16,17 +16,8 @@ import vn.huuloc.boardinghouse.repository.CustomerImageRepository;
 import vn.huuloc.boardinghouse.repository.CustomerRepository;
 import vn.huuloc.boardinghouse.service.CustomerImageService;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class CustomerImageServiceImpl implements CustomerImageService {

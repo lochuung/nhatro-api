@@ -40,6 +40,7 @@ public class InvoiceRequest {
     private BigDecimal electricityUnitPrice;
     private BigDecimal waterUnitPrice;
     private BigDecimal paidAmount = BigDecimal.ZERO;
+    private BigDecimal discount = BigDecimal.ZERO;
     private List<ServiceFeeDto> serviceFees = List.of();
     @NotNull(message = "Thời gian bắt đầu không được để trống")
     private LocalDateTime startDate;

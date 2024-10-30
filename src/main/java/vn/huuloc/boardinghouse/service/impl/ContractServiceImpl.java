@@ -14,7 +14,10 @@ import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
 import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
 import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
 import vn.huuloc.boardinghouse.dto.request.CustomerRequest;
-import vn.huuloc.boardinghouse.entity.*;
+import vn.huuloc.boardinghouse.entity.Contract;
+import vn.huuloc.boardinghouse.entity.ContractCustomerLinked;
+import vn.huuloc.boardinghouse.entity.Customer;
+import vn.huuloc.boardinghouse.entity.Room;
 import vn.huuloc.boardinghouse.enums.ContractStatus;
 import vn.huuloc.boardinghouse.enums.RoomStatus;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
@@ -29,7 +32,9 @@ import vn.huuloc.boardinghouse.util.CommonUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static vn.huuloc.boardinghouse.util.ContractUtils.mapContractToPlaceholders;
 

@@ -1,22 +1,16 @@
 package vn.huuloc.boardinghouse.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 import vn.huuloc.boardinghouse.config.DecimalSerializer;
-import vn.huuloc.boardinghouse.constant.DbConstants;
-import vn.huuloc.boardinghouse.entity.Contract;
-import vn.huuloc.boardinghouse.entity.Invoice;
-import vn.huuloc.boardinghouse.entity.common.BaseEntity;
 
 import java.math.BigDecimal;
-import java.util.List;
-
-import static vn.huuloc.boardinghouse.util.CommonUtils.defaultBigDecimalIfNull;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

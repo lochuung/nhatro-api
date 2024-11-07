@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
 import vn.huuloc.boardinghouse.service.InvoiceService;
 
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<Page<InvoiceDto>> search(@RequestBody SearchRequest searchRequest) {
+    public ResponseEntity<Page<InvoiceDto>> search(@Valid @RequestBody InvoiceSearchRequest searchRequest) {
         return ResponseEntity.ok(invoiceService.search(searchRequest));
     }
 

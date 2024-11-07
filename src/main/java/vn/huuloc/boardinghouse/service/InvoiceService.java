@@ -1,9 +1,9 @@
 package vn.huuloc.boardinghouse.service;
 
 import org.springframework.data.domain.Page;
-import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
 
 import java.io.IOException;
 
@@ -16,7 +16,7 @@ public interface InvoiceService {
 
     InvoiceDto findById(Long id);
 
-    Page<InvoiceDto> search(SearchRequest searchRequest);
+    Page<InvoiceDto> search(InvoiceSearchRequest searchRequest);
 
     byte[] print(Long id) throws IOException;
 }

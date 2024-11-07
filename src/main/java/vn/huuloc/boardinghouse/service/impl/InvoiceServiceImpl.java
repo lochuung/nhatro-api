@@ -1,18 +1,21 @@
 package vn.huuloc.boardinghouse.service.impl;
 
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
-import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.cnj.shared.sortfilter.specification.SearchSpecification;
 import vn.huuloc.boardinghouse.constant.SettingConstants;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.ServiceFeeDto;
 import vn.huuloc.boardinghouse.dto.mapper.InvoiceMapper;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
 import vn.huuloc.boardinghouse.entity.Contract;
 import vn.huuloc.boardinghouse.entity.Invoice;
 import vn.huuloc.boardinghouse.entity.ServiceFee;
@@ -33,8 +36,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InvoiceServiceImpl implements InvoiceService {
@@ -201,10 +206,49 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public Page<InvoiceDto> search(SearchRequest searchRequest) {
-        SearchSpecification<Invoice> specification = new SearchSpecification<>(searchRequest);
-        Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(),
-                searchRequest.getSize());
+    public Page<InvoiceDto> search(InvoiceSearchRequest searchRequest) {
+        Specification<Invoice> specification = new SearchSpecification<>(searchRequest);
+        Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
+
+        // Tạo từng Specification tạm thời và kết hợp chúng sau
+        Specification<Invoice> roomIdSpec = Optional.ofNullable(searchRequest.getRoomId())
+                .map(this::byRoomId)
+                .orElse(Specification.where(null));
+
+        Specification<Invoice> monthSpec = Optional.ofNullable(searchRequest.getMonth())
+                .map(month -> {
+                    String[] monthYear = month.split("/");
+                    if (monthYear.length != 2) {
+                        throw BadRequestException.message("Tháng không hợp lệ");
+                    }
+                    int monthValue = Integer.parseInt(monthYear[0]);
+                    int yearValue = Integer.parseInt(monthYear[1]);
+                    return byMonthAndYear(monthValue, yearValue);
+                })
+                .orElse(Specification.where(null));
+
+        Specification<Invoice> isPaidSpec = Optional.ofNullable(searchRequest.getIsPaid())
+                .map(this::byIsPaid)
+                .orElse(Specification.where(null));
+
+        Specification<Invoice> searchSpec = Optional.ofNullable(searchRequest.getKeyword())
+                .map(keyword -> (Specification<Invoice>) (root, query, criteriaBuilder) -> {
+                    String keywordLike = "%" + keyword + "%";
+                    Predicate roomNamePredicate = criteriaBuilder.like(root.get("contract").get("room").get("name"), keywordLike);
+                    Predicate roomCodePredicate = criteriaBuilder.like(root.get("contract").get("room").get("code"), keywordLike);
+                    return criteriaBuilder.or(roomNamePredicate, roomCodePredicate);
+                })
+                .orElse(Specification.where(null));
+
+        Specification<Invoice> typeSpec = Optional.ofNullable(searchRequest.getType())
+                .map(type -> (Specification<Invoice>)(root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("type"), type))
+                .orElse(Specification.where(null));
+
+        // Kết hợp tất cả Specifications
+        specification = specification.and(roomIdSpec).and(monthSpec).and(isPaidSpec)
+                .and(searchSpec).and(typeSpec);
+
+        // Thực hiện truy vấn và ánh xạ kết quả sang DTO
         return invoiceRepository.findAll(specification, pageable)
                 .map(InvoiceMapper.INSTANCE::toDto);
     }
@@ -223,5 +267,32 @@ public class InvoiceServiceImpl implements InvoiceService {
         context.setVariable("invoice", invoiceDto);
 
         return pdfService.generatePdfFromSource(INVOICE_TEMPLATE, context);
+    }
+
+
+    // Phương thức helper cho RoomId
+    private Specification<Invoice> byRoomId(Long roomId) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("contract").get("room").get("id"), roomId);
+    }
+
+    // Phương thức helper cho Month và Year
+    private Specification<Invoice> byMonthAndYear(int month, int year) {
+        LocalDateTime startDate = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime endDate = startDate.plusMonths(1);
+
+        return (root, query, criteriaBuilder) -> {
+            Predicate startDatePredicate = criteriaBuilder.between(root.get("startDate"), startDate, endDate);
+            Predicate endDatePredicate = criteriaBuilder.between(root.get("endDate"), startDate, endDate);
+            return criteriaBuilder.or(startDatePredicate, endDatePredicate);
+        };
+    }
+
+    // Phương thức helper cho IsPaid
+    private Specification<Invoice> byIsPaid(boolean isPaid) {
+        return (root, query, criteriaBuilder) -> {
+            Predicate paidPredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("paidAmount"), root.get("totalAmount"));
+            return isPaid ? paidPredicate : criteriaBuilder.not(paidPredicate);
+        };
     }
 }

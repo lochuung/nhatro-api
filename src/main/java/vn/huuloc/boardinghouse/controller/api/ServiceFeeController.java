@@ -2,7 +2,9 @@ package vn.huuloc.boardinghouse.controller.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.ServiceFeeDto;
 import vn.huuloc.boardinghouse.service.ServiceFeeService;
 
@@ -27,6 +29,11 @@ public class ServiceFeeController {
     @PostMapping("/upsert")
     public ServiceFeeDto upsert(@Valid @RequestBody ServiceFeeDto serviceFeeDto) {
         return serviceFeeService.upsert(serviceFeeDto);
+    }
+
+    @PostMapping("/search")
+    public Page<ServiceFeeDto> search(@RequestBody SearchRequest searchRequest) {
+        return serviceFeeService.search(searchRequest);
     }
 
     @DeleteMapping("/{id}")

@@ -1,10 +1,8 @@
 package vn.huuloc.boardinghouse.controller.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.huuloc.boardinghouse.dto.SettingDto;
 import vn.huuloc.boardinghouse.service.SettingService;
 
@@ -23,7 +21,7 @@ public class SettingController {
     }
 
     @PostMapping
-    public void updateSetting(SettingDto settingDto) {
+    public void updateSetting(@Valid @RequestBody SettingDto settingDto) {
         settingService.updateSetting(settingDto.getKey(), settingDto.getValue());
     }
 }

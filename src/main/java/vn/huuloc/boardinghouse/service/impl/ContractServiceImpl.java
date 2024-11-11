@@ -4,8 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.cnj.shared.sortfilter.specification.SearchSpecification;
 import vn.huuloc.boardinghouse.dto.ContractDto;
 import vn.huuloc.boardinghouse.dto.mapper.ContractMapper;
@@ -14,6 +14,7 @@ import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
 import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
 import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
 import vn.huuloc.boardinghouse.dto.request.CustomerRequest;
+import vn.huuloc.boardinghouse.dto.sort.filter.ContractSearchRequest;
 import vn.huuloc.boardinghouse.entity.Contract;
 import vn.huuloc.boardinghouse.entity.ContractCustomerLinked;
 import vn.huuloc.boardinghouse.entity.Customer;
@@ -35,6 +36,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static vn.huuloc.boardinghouse.util.ContractUtils.mapContractToPlaceholders;
 
@@ -86,6 +88,10 @@ public class ContractServiceImpl implements ContractService {
             // set room status
             room.setStatus(RoomStatus.RENTED);
             roomRepository.save(room);
+
+            contract.setOwner(renters.get(0).getCustomer());
+
+            contract = contractRepository.save(contract);
             return ContractMapper.INSTANCE.toDto(contract);
         }
 
@@ -171,6 +177,18 @@ public class ContractServiceImpl implements ContractService {
         return wordService.print(CONTRACT_TEMPLATE, contractData);
     }
 
+    @Override
+    public List<ContractDto> findAllAvailable() {
+        List<Contract> contracts = contractRepository.findByStatus(ContractStatus.OPENING);
+        return ContractMapper.INSTANCE.toDto(contracts);
+    }
+
+    @Override
+    public List<ContractDto> findAll() {
+        List<Contract> contracts = contractRepository.findAll();
+        return ContractMapper.INSTANCE.toDto(contracts);
+    }
+
     private ContractDto addMember(CheckinRequest checkinRequest, Contract contract) {
         List<Long> customerIds = checkinRequest.getCustomers().stream()
                 .map(CustomerRequest::getId).toList();
@@ -210,15 +228,28 @@ public class ContractServiceImpl implements ContractService {
                 .stream().map(ContractCustomerLinked::getCustomer).toList();
         ContractDto contractDto = ContractMapper.INSTANCE.toDto(contract);
         contractDto.setMembers(CustomerMapper.INSTANCE.toDto(members));
-        contractDto.setOwner(CustomerMapper.INSTANCE.toDto(contractCustomerLinkedRepository.findOwnerByContractId(id).getCustomer()));
+//        contractDto.setOwner(CustomerMapper.INSTANCE.toDto(contractCustomerLinkedRepository.findOwnerByContractId(id).getCustomer()));
         return contractDto;
     }
 
     @Override
-    public Page<ContractDto> search(SearchRequest searchRequest) {
+    public Page<ContractDto> search(ContractSearchRequest searchRequest) {
         SearchSpecification<Contract> specification = new SearchSpecification<>(searchRequest);
+
+        Specification<Contract> roomIdSpec = Optional.ofNullable(searchRequest.getRoomCode())
+                .map(code -> (Specification<Contract>) (root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("room").get("code"), code))
+                .orElse(null);
+
+        Specification<Contract> statusSpec = Optional.ofNullable(searchRequest.getStatus())
+                .map(status -> (Specification<Contract>) (root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("status"), status))
+                .orElse(null);
+
+        Specification<Contract> finalSpec = specification.and(roomIdSpec).and(statusSpec);
+
         Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
-        Page<Contract> contracts = contractRepository.findAll(specification, pageable);
+        Page<Contract> contracts = contractRepository.findAll(finalSpec, pageable);
         return contracts.map(ContractMapper.INSTANCE::toDto);
     }
 
@@ -247,6 +278,8 @@ public class ContractServiceImpl implements ContractService {
             throw BadRequestException.message("Khách hàng không thuê phòng này");
         }
         newOwner.setOwner(true);
+        contract.setOwner(newOwner.getCustomer());
+        contract = contractRepository.save(contract);
         contractCustomerLinkedRepository.save(newOwner);
         return ContractMapper.INSTANCE.toDto(contract);
     }

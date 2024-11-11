@@ -57,7 +57,7 @@ public class InvoiceController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("filename", "invoice-" + UUID.randomUUID().toString() + ".pdf");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=invoice-" + UUID.randomUUID() + ".pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfBytes);

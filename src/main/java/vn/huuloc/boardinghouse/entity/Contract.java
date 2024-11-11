@@ -74,4 +74,8 @@ public class Contract extends BaseEntity {
 
     @OneToMany(mappedBy = "contract")
     private List<ContractCustomerLinked> contractCustomerLinkeds;
+
+    @OneToOne
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private Customer owner;
 }

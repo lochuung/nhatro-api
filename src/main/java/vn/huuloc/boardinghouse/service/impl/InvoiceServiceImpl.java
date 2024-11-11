@@ -13,6 +13,7 @@ import vn.cnj.shared.sortfilter.specification.SearchSpecification;
 import vn.huuloc.boardinghouse.constant.SettingConstants;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.ServiceFeeDto;
+import vn.huuloc.boardinghouse.dto.mapper.ContractMapper;
 import vn.huuloc.boardinghouse.dto.mapper.InvoiceMapper;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
@@ -260,7 +261,8 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setPrintDate(LocalDateTime.now());
         invoice = invoiceRepository.save(invoice);
         InvoiceDto invoiceDto = InvoiceMapper.INSTANCE.toDto(invoice);
-        invoiceDto.setContract(contractService.findById(invoice.getContract().getId()));
+        Contract contract = invoice.getContract();
+        invoiceDto.setContract(ContractMapper.INSTANCE.toDto(contract));
 
         // Process the HTML template with Thymeleaf
         Context context = new Context();

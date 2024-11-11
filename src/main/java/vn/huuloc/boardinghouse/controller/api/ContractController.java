@@ -8,14 +8,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.ContractDto;
 import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
 import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
 import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
+import vn.huuloc.boardinghouse.dto.sort.filter.ContractSearchRequest;
 import vn.huuloc.boardinghouse.service.ContractService;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/contracts")
@@ -55,10 +56,19 @@ public class ContractController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<Page<ContractDto>> search(@RequestBody SearchRequest searchRequest) {
+    public ResponseEntity<Page<ContractDto>> search(@RequestBody ContractSearchRequest searchRequest) {
         return ResponseEntity.ok(contractService.search(searchRequest));
     }
 
+    @GetMapping("/all-available")
+    public ResponseEntity<List<ContractDto>> getAll() {
+        return ResponseEntity.ok(contractService.findAllAvailable());
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ContractDto>> getAllContracts() {
+        return ResponseEntity.ok(contractService.findAll());
+    }
     @GetMapping(value = "/print/{id}", produces = "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     public ResponseEntity<byte[]> printContract(@PathVariable Long id) throws IOException {
         return ResponseEntity.ok()

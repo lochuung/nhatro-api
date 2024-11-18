@@ -39,9 +39,12 @@ public class InvoiceRequest {
     private Double newWaterNumber;
     private BigDecimal electricityUnitPrice;
     private BigDecimal waterUnitPrice;
+    @Min(value = 0, message = "Số điện không được nhỏ hơn 0")
     private BigDecimal paidAmount = BigDecimal.ZERO;
+    @Min(value = 0, message = "Số điện không được nhỏ hơn 0")
     private BigDecimal discount = BigDecimal.ZERO;
     private List<ServiceFeeDto> serviceFees = List.of();
+    private BigDecimal totalServiceFee;
     @NotNull(message = "Thời gian bắt đầu không được để trống")
     private LocalDateTime startDate;
     @NotNull(message = "Thời gian hết hạn không được để trống")
@@ -49,5 +52,10 @@ public class InvoiceRequest {
     private String note;
     private String adminNote;
     private InvoiceType type = InvoiceType.MONTHLY;
-    private BigDecimal customAmount = BigDecimal.ZERO;
+    @NotNull(message = "Tiền phòng không được để trống")
+    @Min(value = 0, message = "Tiền phòng phải lớn hơn hoặc bằng 0")
+    private BigDecimal roomAmount;
+
+    private BigDecimal otherFee = BigDecimal.ZERO;
+    private String otherFeeNote;
 }

@@ -260,7 +260,7 @@
         <tr>
             <td>
                 <div class="text-center">
-                    <h1 class="invoice-title">HÓA ĐƠN <br /> INVOICE</h1>
+                    <h1 class="invoice-title">HÓA ĐƠN <br/> INVOICE</h1>
                 </div>
             </td>
         </tr>
@@ -294,16 +294,16 @@
     <table class="invoice__detail">
         <thead>
         <tr>
-            <th rowspan="2" class="text-left" style="min-width: 100pt">Khoản thu <br />(Description)</th>
-            <th colspan="2">Chỉ số điện / nước <br />(Electricity/Water)</th>
-            <th rowspan="2">Số lượng <br />(Quantity)</th>
-            <th rowspan="2">Đơn vị <br /> (Unit)</th>
-            <th rowspan="2">Đơn giá <br /> (Unit Price)</th>
-            <th rowspan="2">Thành tiền <br />(Total)</th>
+            <th rowspan="2" class="text-left" style="min-width: 100pt">Khoản thu <br/>(Description)</th>
+            <th colspan="2">Chỉ số điện / nước <br/>(Electricity/Water)</th>
+            <th rowspan="2">Số lượng <br/>(Quantity)</th>
+            <th rowspan="2">Đơn vị <br/> (Unit)</th>
+            <th rowspan="2">Đơn giá <br/> (Unit Price)</th>
+            <th rowspan="2">Thành tiền <br/>(Total)</th>
         </tr>
         <tr>
-            <th>Đầu<br />(Previous number)</th>
-            <th>Cuối <br />(Present number)</th>
+            <th>Đầu<br/>(Previous number)</th>
+            <th>Cuối <br/>(Present number)</th>
         </tr>
         </thead>
         <tbody>
@@ -351,13 +351,24 @@
 
         <!-- Service Fees -->
         <tr th:each="serviceFee : ${invoice.serviceFees}">
-            <td class="text-left" th:text="${serviceFee.name} + ' (' + serviceFee.description + ')'">Dịch vụ khác</td>
+            <td class="text-left" th:text="${serviceFee.name}">Dịch vụ khác</td>
             <td>0</td>
             <td>0</td>
             <td>1</td>
             <td></td>
             <td th:text="${#numbers.formatDecimal(serviceFee.unitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
             <td th:text="${#numbers.formatDecimal(serviceFee.unitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+        </tr>
+
+        <!--        Other Fee row-->
+        <tr>
+            <td class="text-left" th:text="${invoice.otherFeeNote}">Phí khác</td>
+            <td>0</td>
+            <td>0</td>
+            <td>1</td>
+            <td></td>
+            <td th:text="${#numbers.formatDecimal(invoice.otherFee, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+            <td th:text="${#numbers.formatDecimal(invoice.otherFee, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
         </tr>
 
         <!-- Total Amounts -->
@@ -369,7 +380,8 @@
         </tr>
         <tr>
             <td colspan="6" class="text-left"><b>Tổng cộng/Total amount</b></td>
-            <td><b th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b></td>
+            <td><b th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b>
+            </td>
         </tr>
         <tr>
             <td colspan="6" class="text-left"><b>Đã trả/Paid</b></td>
@@ -377,7 +389,9 @@
         </tr>
         <tr>
             <td colspan="6" class="text-left"><b>Còn lại/Remaining</b></td>
-            <td><b th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b></td>
+            <td>
+                <b th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b>
+            </td>
         </tr>
         </tbody>
     </table>
@@ -391,15 +405,22 @@
         </tr>
         <tr>
             <td class="text-nowrap pr-24"><b>Tổng số tiền phải thanh toán kì này (Total)</b></td>
-            <td class="text-nowrap pr-24" th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">2.400.000đ</td>
+            <td class="text-nowrap pr-24"
+                th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">2.400.000đ
+            </td>
         </tr>
         <tr>
             <td class="text-nowrap pr-24"><b>Tổng số tiền đã thanh toán trong kỳ (Paid)</b></td>
-            <td class="text-nowrap pr-24" th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">0đ</td>
+            <td class="text-nowrap pr-24"
+                th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">0đ
+            </td>
         </tr>
         <tr>
             <td class="text-nowrap pr-24"><b>Tổng số tiền còn phải thanh toán (Remaining)</b></td>
-            <td class="text-nowrap pr-24" th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">2.400.000đ</td>
+            <td class="text-nowrap pr-24"
+                th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">
+                2.400.000đ
+            </td>
         </tr>
         <tr>
             <td>
@@ -418,7 +439,7 @@
             </td>
             <td>
                 <div class="invoice__footer__signature text-center" style="margin-left: 40%">
-                    <div><b>Người lập hóa đơn <br />(Seller)</b></div>
+                    <div><b>Người lập hóa đơn <br/>(Seller)</b></div>
                     <div style="height: 2cm"></div>
                 </div>
             </td>

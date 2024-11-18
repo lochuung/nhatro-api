@@ -54,5 +54,9 @@ public class InvoiceDto extends BaseDto {
     private String adminNote;
     private InvoiceType type;
     @JsonSerialize(using = DecimalSerializer.class)
-    private BigDecimal customAmount;
+    private BigDecimal roomAmount;
+
+    @JsonSerialize(using = DecimalSerializer.class)
+    private BigDecimal otherFee;
+    private String otherFeeNote;
 }

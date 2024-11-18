@@ -3,7 +3,6 @@ package vn.huuloc.boardinghouse.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UuidGenerator;
 import vn.huuloc.boardinghouse.entity.common.BaseEntity;
 import vn.huuloc.boardinghouse.enums.InvoiceType;
@@ -130,5 +129,12 @@ public class Invoice extends BaseEntity {
     private InvoiceType type;
 
     @Column(name = "custom_amount")
-    private BigDecimal customAmount;
+    private BigDecimal roomAmount;
+
+    @Column(name = "other_fee", columnDefinition = DECIMAL_MONEY_DEFAULT_0)
+    @ColumnDefault("0")
+    private BigDecimal otherFee;
+
+    @Column(name = "other_fee_note")
+    private String otherFeeNote;
 }

@@ -16,6 +16,7 @@ import vn.huuloc.boardinghouse.dto.ServiceFeeDto;
 import vn.huuloc.boardinghouse.dto.mapper.ContractMapper;
 import vn.huuloc.boardinghouse.dto.mapper.InvoiceMapper;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.dto.request.MonthYearRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
 import vn.huuloc.boardinghouse.entity.Contract;
 import vn.huuloc.boardinghouse.entity.Invoice;
@@ -77,8 +78,13 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setElectricityUnitPrice(invoice.getElectricityUnitPrice() == null ? BigDecimal.valueOf(electricUnitPrice) : invoice.getElectricityUnitPrice());
         invoice.setElectricityAmount(InvoiceUtils.calculateElectricityAmount(invoice));
         invoice.setWaterAmount(InvoiceUtils.calculateWaterAmount(invoice));
+        invoice.setTotalServiceFee(invoiceRequest.getTotalServiceFee());
 
         BigDecimal total = invoice.getElectricityAmount().add(invoice.getWaterAmount());
+
+        total = total.add(invoiceRequest.getOtherFee());
+        invoice.setOtherFee(invoiceRequest.getOtherFee());
+        invoice.setOtherFeeNote(invoiceRequest.getOtherFeeNote());
 
         if (invoiceRequest.getType() == InvoiceType.MONTHLY) {
 
@@ -91,11 +97,24 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
             invoice.setServiceFees(serviceFees);
 
-            for (ServiceFee serviceFee : serviceFees) {
-                total = total.add(serviceFee.getUnitPrice());
+            if (invoiceRequest.getTotalServiceFee() == null) {
+                BigDecimal totalServiceFee = serviceFees.stream()
+                        .map(ServiceFee::getUnitPrice)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                invoice.setTotalServiceFee(totalServiceFee);
+                total = total.add(totalServiceFee);
+            } else {
+                total = total.add(invoiceRequest.getTotalServiceFee());
             }
 
-            total = total.add(contract.getPrice());
+//            total = total.add(contract.getPrice());
+
+            if (invoiceRequest.getRoomAmount() == null) {
+                total = total.add(contract.getPrice());
+            } else {
+                total = total.add(invoiceRequest.getRoomAmount());
+                invoice.setRoomAmount(invoiceRequest.getRoomAmount());
+            }
 
 
             invoice.setSubTotal(total);
@@ -107,18 +126,19 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         if (invoiceRequest.getType() == InvoiceType.CHECK_OUT) {
             int dayOfMonth = LocalDateTime.now().getDayOfMonth();
-            if (invoiceRequest.getCustomAmount() == null) {
+            if (invoiceRequest.getRoomAmount() == null) {
                 BigDecimal rateOfMonthsDecimal = BigDecimal.valueOf(dayOfMonth * 1.0 / 30);
                 BigDecimal monthlyPrice = contract.getPrice().multiply(rateOfMonthsDecimal);
                 total = total.add(monthlyPrice);
             } else {
-                total = total.add(invoiceRequest.getCustomAmount());
+                total = total.add(invoiceRequest.getRoomAmount());
+                invoice.setRoomAmount(invoiceRequest.getRoomAmount());
             }
             invoice.setSubTotal(total);
             invoice.setDiscount(invoiceRequest.getDiscount());
             total = total.subtract(invoiceRequest.getDiscount());
+
             invoice.setTotalAmount(total);
-            invoice.setCustomAmount(invoiceRequest.getCustomAmount());
             return InvoiceMapper.INSTANCE.toDto(invoiceRepository.save(invoice));
         }
         throw BadRequestException.message("Loại hóa đơn không hợp lệ");
@@ -148,20 +168,43 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setWaterUnitPrice(invoice.getWaterUnitPrice() == null ? BigDecimal.valueOf(waterUnitPrice) : invoice.getWaterUnitPrice());
         invoice.setElectricityAmount(InvoiceUtils.calculateElectricityAmount(invoice));
         invoice.setWaterAmount(InvoiceUtils.calculateWaterAmount(invoice));
+        invoice.setTotalServiceFee(invoiceRequest.getTotalServiceFee());
 
 
         BigDecimal total = invoice.getElectricityAmount().add(invoice.getWaterAmount());
 
+        total = total.add(invoiceRequest.getOtherFee());
+        invoice.setOtherFee(invoiceRequest.getOtherFee());
+        invoice.setOtherFeeNote(invoiceRequest.getOtherFeeNote());
+
         if (invoice.getType() == InvoiceType.MONTHLY) {
 
-            total = total.add(invoice.getContract().getPrice());
+//            total = total.add(invoice.getContract().getPrice());
+
+            if (invoiceRequest.getRoomAmount() == null) {
+                total = total.add(invoice.getContract().getPrice());
+            } else {
+                total = total.add(invoiceRequest.getRoomAmount());
+                invoice.setRoomAmount(invoiceRequest.getRoomAmount());
+            }
 
             invoice.getServiceFees().clear();
             for (ServiceFeeDto serviceFeeDto : invoiceRequest.getServiceFees()) {
                 ServiceFee serviceFee = serviceFeeRepository.findById(serviceFeeDto.getId())
                         .orElseThrow(() -> BadRequestException.message("Dịch vụ không tồn tại"));
                 invoice.getServiceFees().add(serviceFee);
-                total = total.add(serviceFee.getUnitPrice());
+//                total = total.add(serviceFee.getUnitPrice());
+            }
+
+
+            if (invoiceRequest.getTotalServiceFee() == null) {
+                BigDecimal totalServiceFee = invoice.getServiceFees().stream()
+                        .map(ServiceFee::getUnitPrice)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                invoice.setTotalServiceFee(totalServiceFee);
+                total = total.add(totalServiceFee);
+            } else {
+                total = total.add(invoiceRequest.getTotalServiceFee());
             }
 
             invoice.setSubTotal(total);
@@ -172,19 +215,19 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         if (invoice.getType() == InvoiceType.CHECK_OUT) {
             int dayOfMonth = LocalDateTime.now().getDayOfMonth();
-            if (invoice.getCustomAmount() == null) {
+            if (invoice.getRoomAmount() == null) {
                 BigDecimal numberOfMonthsDecimal = BigDecimal.valueOf(dayOfMonth);
                 BigDecimal monthlyPrice = invoice.getContract().getPrice().multiply(numberOfMonthsDecimal).multiply(BigDecimal.valueOf(1.0 / 30));
                 total = total.add(monthlyPrice);
             } else {
-                total = total.add(invoiceRequest.getCustomAmount());
+                total = total.add(invoiceRequest.getRoomAmount());
+                invoice.setRoomAmount(invoiceRequest.getRoomAmount());
             }
 
             invoice.setSubTotal(total);
             invoice.setDiscount(invoiceRequest.getDiscount());
             total = total.subtract(invoiceRequest.getDiscount());
             invoice.setTotalAmount(total);
-            invoice.setCustomAmount(invoiceRequest.getCustomAmount());
             return InvoiceMapper.INSTANCE.toDto(invoiceRepository.save(invoice));
         }
         throw BadRequestException.message("Loại hóa đơn không hợp lệ");
@@ -242,7 +285,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .orElse(Specification.where(null));
 
         Specification<Invoice> typeSpec = Optional.ofNullable(searchRequest.getType())
-                .map(type -> (Specification<Invoice>)(root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("type"), type))
+                .map(type -> (Specification<Invoice>) (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("type"), type))
                 .orElse(Specification.where(null));
 
         // Kết hợp tất cả Specifications
@@ -267,6 +310,67 @@ public class InvoiceServiceImpl implements InvoiceService {
         // Process the HTML template with Thymeleaf
         Context context = new Context();
         context.setVariable("invoice", invoiceDto);
+
+        return pdfService.generatePdfFromSource(INVOICE_TEMPLATE, context);
+    }
+
+    @Override
+    public void generateInvoices(MonthYearRequest monthRecord) {
+        String[] monthYear = monthRecord.getMonthYear().split("/");
+        if (monthYear.length != 2) {
+            throw BadRequestException.message("Tháng không hợp lệ");
+        }
+        int month = Integer.parseInt(monthYear[0]);
+        int year = Integer.parseInt(monthYear[1]);
+
+        List<Contract> contracts = contractRepository.findAllByStatus(ContractStatus.OPENING);
+        for (Contract contract : contracts) {
+            // if invoice exists, skip
+            if (invoiceRepository.exists(byRoomId(contract.getRoom().getId()).and(byMonthAndYear(month, year)))) {
+                continue;
+            }
+
+            Invoice invoice = new Invoice();
+            invoice.setContract(contract);
+            invoice.setStartDate(LocalDateTime.of(year, month, 1, 0, 0));
+            invoice.setEndDate(LocalDateTime.of(year, month, 1, 0, 0).plusMonths(1));
+            invoice.setType(InvoiceType.MONTHLY);
+            invoice.setElectricityUnitPrice(BigDecimal.valueOf(Double.parseDouble(settingService.getSetting(SettingConstants.ELECTRICITY_UNIT_PRICE))));
+            invoice.setWaterUnitPrice(BigDecimal.valueOf(Double.parseDouble(settingService.getSetting(SettingConstants.WATER_UNIT_PRICE))));
+            invoice.setElectricityAmount(InvoiceUtils.calculateElectricityAmount(invoice));
+            invoice.setWaterAmount(InvoiceUtils.calculateWaterAmount(invoice));
+            invoice.setTotalServiceFee(BigDecimal.ZERO);
+            invoice.setOtherFee(BigDecimal.ZERO);
+            invoice.setOtherFeeNote("");
+            invoice.setRoomAmount(contract.getPrice());
+            invoice.setSubTotal(invoice.getElectricityAmount().add(invoice.getWaterAmount()).add(contract.getPrice()));
+            invoice.setDiscount(BigDecimal.ZERO);
+            invoice.setTotalAmount(invoice.getSubTotal());
+            invoiceRepository.save(invoice);
+        }
+    }
+
+    @Override
+    public byte[] printMonthlyInvoices(MonthYearRequest monthRecord) throws IOException {
+        String[] monthYear = monthRecord.getMonthYear().split("/");
+        if (monthYear.length != 2) {
+            throw BadRequestException.message("Tháng không hợp lệ");
+        }
+        int month = Integer.parseInt(monthYear[0]);
+        int year = Integer.parseInt(monthYear[1]);
+
+        List<Invoice> invoices = invoiceRepository.findAll(byMonthAndYear(month, year));
+        List<InvoiceDto> invoiceDtos = invoices.stream()
+                .map(invoice -> {
+                    InvoiceDto invoiceDto = InvoiceMapper.INSTANCE.toDto(invoice);
+                    invoiceDto.setContract(ContractMapper.INSTANCE.toDto(invoice.getContract()));
+                    return invoiceDto;
+                })
+                .toList();
+
+        // Process the HTML template with Thymeleaf
+        Context context = new Context();
+        context.setVariable("invoices", invoiceDtos);
 
         return pdfService.generatePdfFromSource(INVOICE_TEMPLATE, context);
     }

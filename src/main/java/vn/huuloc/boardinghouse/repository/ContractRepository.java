@@ -11,4 +11,6 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
     Contract findByRoomIdAndStatus(Long roomId, ContractStatus status);
 
     List<Contract> findByStatus(ContractStatus contractStatus);
+
+    List<Contract> findAllByStatus(ContractStatus contractStatus);
 }

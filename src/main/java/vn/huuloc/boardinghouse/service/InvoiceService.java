@@ -1,8 +1,10 @@
 package vn.huuloc.boardinghouse.service;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.dto.request.MonthYearRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
 
 import java.io.IOException;
@@ -19,4 +21,8 @@ public interface InvoiceService {
     Page<InvoiceDto> search(InvoiceSearchRequest searchRequest);
 
     byte[] print(Long id) throws IOException;
+
+    void generateInvoices(MonthYearRequest monthRecord);
+
+    byte[] printMonthlyInvoices(@Valid MonthYearRequest monthRecord) throws IOException;
 }

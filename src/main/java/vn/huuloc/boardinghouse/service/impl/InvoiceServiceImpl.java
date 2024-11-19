@@ -16,6 +16,7 @@ import vn.huuloc.boardinghouse.dto.ServiceFeeDto;
 import vn.huuloc.boardinghouse.dto.mapper.ContractMapper;
 import vn.huuloc.boardinghouse.dto.mapper.InvoiceMapper;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.dto.request.MonthYearRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
 import vn.huuloc.boardinghouse.entity.Contract;
 import vn.huuloc.boardinghouse.entity.Invoice;
@@ -309,6 +310,67 @@ public class InvoiceServiceImpl implements InvoiceService {
         // Process the HTML template with Thymeleaf
         Context context = new Context();
         context.setVariable("invoice", invoiceDto);
+
+        return pdfService.generatePdfFromSource(INVOICE_TEMPLATE, context);
+    }
+
+    @Override
+    public void generateInvoices(MonthYearRequest monthRecord) {
+        String[] monthYear = monthRecord.getMonthYear().split("/");
+        if (monthYear.length != 2) {
+            throw BadRequestException.message("Tháng không hợp lệ");
+        }
+        int month = Integer.parseInt(monthYear[0]);
+        int year = Integer.parseInt(monthYear[1]);
+
+        List<Contract> contracts = contractRepository.findAllByStatus(ContractStatus.OPENING);
+        for (Contract contract : contracts) {
+            // if invoice exists, skip
+            if (invoiceRepository.exists(byRoomId(contract.getRoom().getId()).and(byMonthAndYear(month, year)))) {
+                continue;
+            }
+
+            Invoice invoice = new Invoice();
+            invoice.setContract(contract);
+            invoice.setStartDate(LocalDateTime.of(year, month, 1, 0, 0));
+            invoice.setEndDate(LocalDateTime.of(year, month, 1, 0, 0).plusMonths(1));
+            invoice.setType(InvoiceType.MONTHLY);
+            invoice.setElectricityUnitPrice(BigDecimal.valueOf(Double.parseDouble(settingService.getSetting(SettingConstants.ELECTRICITY_UNIT_PRICE))));
+            invoice.setWaterUnitPrice(BigDecimal.valueOf(Double.parseDouble(settingService.getSetting(SettingConstants.WATER_UNIT_PRICE))));
+            invoice.setElectricityAmount(InvoiceUtils.calculateElectricityAmount(invoice));
+            invoice.setWaterAmount(InvoiceUtils.calculateWaterAmount(invoice));
+            invoice.setTotalServiceFee(BigDecimal.ZERO);
+            invoice.setOtherFee(BigDecimal.ZERO);
+            invoice.setOtherFeeNote("");
+            invoice.setRoomAmount(contract.getPrice());
+            invoice.setSubTotal(invoice.getElectricityAmount().add(invoice.getWaterAmount()).add(contract.getPrice()));
+            invoice.setDiscount(BigDecimal.ZERO);
+            invoice.setTotalAmount(invoice.getSubTotal());
+            invoiceRepository.save(invoice);
+        }
+    }
+
+    @Override
+    public byte[] printMonthlyInvoices(MonthYearRequest monthRecord) throws IOException {
+        String[] monthYear = monthRecord.getMonthYear().split("/");
+        if (monthYear.length != 2) {
+            throw BadRequestException.message("Tháng không hợp lệ");
+        }
+        int month = Integer.parseInt(monthYear[0]);
+        int year = Integer.parseInt(monthYear[1]);
+
+        List<Invoice> invoices = invoiceRepository.findAll(byMonthAndYear(month, year));
+        List<InvoiceDto> invoiceDtos = invoices.stream()
+                .map(invoice -> {
+                    InvoiceDto invoiceDto = InvoiceMapper.INSTANCE.toDto(invoice);
+                    invoiceDto.setContract(ContractMapper.INSTANCE.toDto(invoice.getContract()));
+                    return invoiceDto;
+                })
+                .toList();
+
+        // Process the HTML template with Thymeleaf
+        Context context = new Context();
+        context.setVariable("invoices", invoiceDtos);
 
         return pdfService.generatePdfFromSource(INVOICE_TEMPLATE, context);
     }

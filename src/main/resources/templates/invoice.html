@@ -221,232 +221,464 @@
     </style>
 </head>
 <body>
+<div th:if="${invoices != null and #lists.size(invoices) > 0}">
+    <div th:each="invoice : ${invoices}">
 
-<p style="page-break-before: always"></p>
+        <p style="page-break-before: always"></p>
 
-<div class="page-container">
+        <div class="page-container">
 
-    <!-- Invoice Header -->
-    <table class="invoice__header">
-        <tbody>
-        <tr>
-            <td class="absorbing-column">
-                <div class="company__detail">
-                    <h2 class="detail-title" th:text="${invoice.contract.room.branch.name}">Nhà 1 test</h2>
-                    <div class="detail-info">
-                        Địa chỉ/Address: <span th:text="${invoice.contract.room.branch.address}"></span>
+            <!-- Invoice Header -->
+            <table class="invoice__header">
+                <tbody>
+                <tr>
+                    <td class="absorbing-column">
+                        <div class="company__detail">
+                            <h2 class="detail-title" th:text="${invoice.contract.room.branch.name}">Nhà 1 test</h2>
+                            <div class="detail-info">
+                                Địa chỉ/Address: <span th:text="${invoice.contract.room.branch.address}"></span>
+                            </div>
+                            <div class="detail-info">
+                                SĐT/Phone: <span th:text="${invoice.contract.room.branch.phone}">0343316771</span>
+                            </div>
+                            <div class="invoice__date-issue text-nowrap">
+                                Ngày in / Statement Date: <span th:text="${#temporals.format(invoice.printDate, 'dd/MM/yyyy')}">15/10/2024</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <!-- Optionally include a company logo here -->
+                        <!-- <div class="company__logo">
+                            <img th:src="@{/images/logo.png}" alt="Company Logo" />
+                        </div> -->
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Invoice Title -->
+            <table class="invoice__title">
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="text-center">
+                            <h1 class="invoice-title">HÓA ĐƠN <br/> INVOICE</h1>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Customer Information -->
+            <table class="invoice__customer">
+                <tbody>
+                <tr>
+                    <td class="pr-24">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td class="text-nowrap pr-24"><b>Tên khách hàng/Customer name:</b></td>
+                                <td class="absorbing-column"><b th:text="${invoice.contract.owner.name}">test</b></td>
+                            </tr>
+                            <tr>
+                                <td class="text-nowrap pr-24">Phòng/Room:</td>
+                                <td class="absorbing-column" th:text="${invoice.contract.room.name}">2</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <!-- Additional customer details can be added here if needed -->
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Invoice Details -->
+            <table class="invoice__detail">
+                <thead>
+                <tr>
+                    <th rowspan="2" class="text-left" style="min-width: 100pt">Khoản thu <br/>(Description)</th>
+                    <th colspan="2">Chỉ số điện / nước <br/>(Electricity/Water)</th>
+                    <th rowspan="2">Số lượng <br/>(Quantity)</th>
+                    <th rowspan="2">Đơn vị <br/> (Unit)</th>
+                    <th rowspan="2">Đơn giá <br/> (Unit Price)</th>
+                    <th rowspan="2">Thành tiền <br/>(Total)</th>
+                </tr>
+                <tr>
+                    <th>Đầu<br/>(Previous number)</th>
+                    <th>Cuối <br/>(Present number)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Room Rent Row -->
+                <tr>
+                    <td class="text-left">
+                        Thu tiền phòng từ
+                        <span th:text="${#temporals.format(invoice.startDate, 'dd/MM/yyyy')}">09/10/2024</span>
+                        đến
+                        <span th:text="${#temporals.format(invoice.endDate, 'dd/MM/yyyy')}">01/11/2024</span><br/>
+                        Room rent (from
+                        <span th:text="${#temporals.format(invoice.startDate, 'dd/MM/yyyy')}">09/10/2024</span>
+                        to
+                        <span th:text="${#temporals.format(invoice.endDate, 'dd/MM/yyyy')}">01/11/2024</span><br/>)
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td th:text="${''}">1</td>
+                    <td></td>
+                    <td th:text="${#numbers.formatDecimal(invoice.contract.price, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                    <td th:text="${#numbers.formatDecimal(invoice.contract.price, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                </tr>
+
+                <!-- Electricity Row -->
+                <tr>
+                    <td class="text-left">Tiền điện<br/>Electricity</td>
+                    <td th:text="${invoice.oldElectricityNumber}">0</td>
+                    <td th:text="${invoice.newElectricityNumber}">0</td>
+                    <td th:text="${invoice.usageElectricityNumber}">0</td>
+                    <td>kWh</td>
+                    <td th:text="${#numbers.formatDecimal(invoice.electricityUnitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                    <td th:text="${#numbers.formatDecimal(invoice.electricityAmount, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                </tr>
+
+                <!-- Water Row -->
+                <tr>
+                    <td class="text-left">Tiền nước<br/>Water</td>
+                    <td th:text="${invoice.oldWaterNumber}">0</td>
+                    <td th:text="${invoice.newWaterNumber}">0</td>
+                    <td th:text="${invoice.usageWaterNumber}">0</td>
+                    <td>m³</td>
+                    <td th:text="${#numbers.formatDecimal(invoice.waterUnitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                    <td th:text="${#numbers.formatDecimal(invoice.waterAmount, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                </tr>
+
+                <!-- Service Fees -->
+                <tr th:each="serviceFee : ${invoice.serviceFees}">
+                    <td class="text-left" th:text="${serviceFee.name}">Dịch vụ khác</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td></td>
+                    <td th:text="${#numbers.formatDecimal(serviceFee.unitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                    <td th:text="${#numbers.formatDecimal(serviceFee.unitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                </tr>
+
+                <!--        Other Fee row-->
+                <tr>
+                    <td class="text-left" th:text="${invoice.otherFeeNote}">Phí khác</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td></td>
+                    <td th:text="${#numbers.formatDecimal(invoice.otherFee, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                    <td th:text="${#numbers.formatDecimal(invoice.otherFee, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                </tr>
+
+                <!-- Total Amounts -->
+                </tbody>
+                <tbody>
+                <tr>
+                    <td colspan="6" class="text-left"><b>Giảm giá/Discount</b></td>
+                    <td><b th:text="${#numbers.formatDecimal(invoice.discount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b></td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="text-left"><b>Tổng cộng/Total amount</b></td>
+                    <td><b th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="text-left"><b>Đã trả/Paid</b></td>
+                    <td><b th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'WHITESPACE', 0, 'COMMA')}">0</b></td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="text-left"><b>Còn lại/Remaining</b></td>
+                    <td>
+                        <b th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Invoice Summary -->
+            <table class="invoice__summary">
+                <tbody>
+                <tr>
+                    <td class="text-nowrap pr-24"><b>Ghi chú:</b></td>
+                    <td th:text="${invoice.note}"></td>
+                </tr>
+                <tr>
+                    <td class="text-nowrap pr-24"><b>Tổng số tiền phải thanh toán kì này (Total)</b></td>
+                    <td class="text-nowrap pr-24"
+                        th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">2.400.000đ
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-nowrap pr-24"><b>Tổng số tiền đã thanh toán trong kỳ (Paid)</b></td>
+                    <td class="text-nowrap pr-24"
+                        th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">0đ
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-nowrap pr-24"><b>Tổng số tiền còn phải thanh toán (Remaining)</b></td>
+                    <td class="text-nowrap pr-24"
+                        th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">
+                        2.400.000đ
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Bằng chữ/In words: <span th:text="${invoice.totalAmountInWords}">hai triệu bốn trăm nghìn đồng</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Invoice Footer -->
+            <table class="invoice__footer">
+                <tbody>
+                <tr>
+                    <td>
+                        <!-- Optionally include additional footer information -->
+                    </td>
+                    <td>
+                        <div class="invoice__footer__signature text-center" style="margin-left: 40%">
+                            <div><b>Người lập hóa đơn <br/>(Seller)</b></div>
+                            <div style="height: 2cm"></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:unless="${invoices != null and #lists.size(invoices) > 0}">
+
+    <p style="page-break-before: always"></p>
+
+    <div class="page-container">
+
+        <!-- Invoice Header -->
+        <table class="invoice__header">
+            <tbody>
+            <tr>
+                <td class="absorbing-column">
+                    <div class="company__detail">
+                        <h2 class="detail-title" th:text="${invoice.contract.room.branch.name}">Nhà 1 test</h2>
+                        <div class="detail-info">
+                            Địa chỉ/Address: <span th:text="${invoice.contract.room.branch.address}"></span>
+                        </div>
+                        <div class="detail-info">
+                            SĐT/Phone: <span th:text="${invoice.contract.room.branch.phone}">0343316771</span>
+                        </div>
+                        <div class="invoice__date-issue text-nowrap">
+                            Ngày in / Statement Date: <span th:text="${#temporals.format(invoice.printDate, 'dd/MM/yyyy')}">15/10/2024</span>
+                        </div>
                     </div>
-                    <div class="detail-info">
-                        SĐT/Phone: <span th:text="${invoice.contract.room.branch.phone}">0343316771</span>
+                </td>
+                <td>
+                    <!-- Optionally include a company logo here -->
+                    <!-- <div class="company__logo">
+                        <img th:src="@{/images/logo.png}" alt="Company Logo" />
+                    </div> -->
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Invoice Title -->
+        <table class="invoice__title">
+            <tbody>
+            <tr>
+                <td>
+                    <div class="text-center">
+                        <h1 class="invoice-title">HÓA ĐƠN <br/> INVOICE</h1>
                     </div>
-                    <div class="invoice__date-issue text-nowrap">
-                        Ngày in / Statement Date: <span th:text="${#temporals.format(invoice.printDate, 'dd/MM/yyyy')}">15/10/2024</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Customer Information -->
+        <table class="invoice__customer">
+            <tbody>
+            <tr>
+                <td class="pr-24">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td class="text-nowrap pr-24"><b>Tên khách hàng/Customer name:</b></td>
+                            <td class="absorbing-column"><b th:text="${invoice.contract.owner.name}">test</b></td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap pr-24">Phòng/Room:</td>
+                            <td class="absorbing-column" th:text="${invoice.contract.room.name}">2</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <!-- Additional customer details can be added here if needed -->
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Invoice Details -->
+        <table class="invoice__detail">
+            <thead>
+            <tr>
+                <th rowspan="2" class="text-left" style="min-width: 100pt">Khoản thu <br/>(Description)</th>
+                <th colspan="2">Chỉ số điện / nước <br/>(Electricity/Water)</th>
+                <th rowspan="2">Số lượng <br/>(Quantity)</th>
+                <th rowspan="2">Đơn vị <br/> (Unit)</th>
+                <th rowspan="2">Đơn giá <br/> (Unit Price)</th>
+                <th rowspan="2">Thành tiền <br/>(Total)</th>
+            </tr>
+            <tr>
+                <th>Đầu<br/>(Previous number)</th>
+                <th>Cuối <br/>(Present number)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Room Rent Row -->
+            <tr>
+                <td class="text-left">
+                    Thu tiền phòng từ
+                    <span th:text="${#temporals.format(invoice.startDate, 'dd/MM/yyyy')}">09/10/2024</span>
+                    đến
+                    <span th:text="${#temporals.format(invoice.endDate, 'dd/MM/yyyy')}">01/11/2024</span><br/>
+                    Room rent (from
+                    <span th:text="${#temporals.format(invoice.startDate, 'dd/MM/yyyy')}">09/10/2024</span>
+                    to
+                    <span th:text="${#temporals.format(invoice.endDate, 'dd/MM/yyyy')}">01/11/2024</span><br/>)
+                </td>
+                <td></td>
+                <td></td>
+                <td th:text="${''}">1</td>
+                <td></td>
+                <td th:text="${#numbers.formatDecimal(invoice.contract.price, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                <td th:text="${#numbers.formatDecimal(invoice.contract.price, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+            </tr>
+
+            <!-- Electricity Row -->
+            <tr>
+                <td class="text-left">Tiền điện<br/>Electricity</td>
+                <td th:text="${invoice.oldElectricityNumber}">0</td>
+                <td th:text="${invoice.newElectricityNumber}">0</td>
+                <td th:text="${invoice.usageElectricityNumber}">0</td>
+                <td>kWh</td>
+                <td th:text="${#numbers.formatDecimal(invoice.electricityUnitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                <td th:text="${#numbers.formatDecimal(invoice.electricityAmount, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+            </tr>
+
+            <!-- Water Row -->
+            <tr>
+                <td class="text-left">Tiền nước<br/>Water</td>
+                <td th:text="${invoice.oldWaterNumber}">0</td>
+                <td th:text="${invoice.newWaterNumber}">0</td>
+                <td th:text="${invoice.usageWaterNumber}">0</td>
+                <td>m³</td>
+                <td th:text="${#numbers.formatDecimal(invoice.waterUnitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                <td th:text="${#numbers.formatDecimal(invoice.waterAmount, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+            </tr>
+
+            <!-- Service Fees -->
+            <tr th:each="serviceFee : ${invoice.serviceFees}">
+                <td class="text-left" th:text="${serviceFee.name}">Dịch vụ khác</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td></td>
+                <td th:text="${#numbers.formatDecimal(serviceFee.unitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                <td th:text="${#numbers.formatDecimal(serviceFee.unitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+            </tr>
+
+            <!--        Other Fee row-->
+            <tr>
+                <td class="text-left" th:text="${invoice.otherFeeNote}">Phí khác</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td></td>
+                <td th:text="${#numbers.formatDecimal(invoice.otherFee, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+                <td th:text="${#numbers.formatDecimal(invoice.otherFee, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
+            </tr>
+
+            <!-- Total Amounts -->
+            </tbody>
+            <tbody>
+            <tr>
+                <td colspan="6" class="text-left"><b>Giảm giá/Discount</b></td>
+                <td><b th:text="${#numbers.formatDecimal(invoice.discount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b></td>
+            </tr>
+            <tr>
+                <td colspan="6" class="text-left"><b>Tổng cộng/Total amount</b></td>
+                <td><b th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" class="text-left"><b>Đã trả/Paid</b></td>
+                <td><b th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'WHITESPACE', 0, 'COMMA')}">0</b></td>
+            </tr>
+            <tr>
+                <td colspan="6" class="text-left"><b>Còn lại/Remaining</b></td>
+                <td>
+                    <b th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Invoice Summary -->
+        <table class="invoice__summary">
+            <tbody>
+            <tr>
+                <td class="text-nowrap pr-24"><b>Ghi chú:</b></td>
+                <td th:text="${invoice.note}"></td>
+            </tr>
+            <tr>
+                <td class="text-nowrap pr-24"><b>Tổng số tiền phải thanh toán kì này (Total)</b></td>
+                <td class="text-nowrap pr-24"
+                    th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">2.400.000đ
+                </td>
+            </tr>
+            <tr>
+                <td class="text-nowrap pr-24"><b>Tổng số tiền đã thanh toán trong kỳ (Paid)</b></td>
+                <td class="text-nowrap pr-24"
+                    th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">0đ
+                </td>
+            </tr>
+            <tr>
+                <td class="text-nowrap pr-24"><b>Tổng số tiền còn phải thanh toán (Remaining)</b></td>
+                <td class="text-nowrap pr-24"
+                    th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">
+                    2.400.000đ
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Bằng chữ/In words: <span th:text="${invoice.totalAmountInWords}">hai triệu bốn trăm nghìn đồng</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Invoice Footer -->
+        <table class="invoice__footer">
+            <tbody>
+            <tr>
+                <td>
+                    <!-- Optionally include additional footer information -->
+                </td>
+                <td>
+                    <div class="invoice__footer__signature text-center" style="margin-left: 40%">
+                        <div><b>Người lập hóa đơn <br/>(Seller)</b></div>
+                        <div style="height: 2cm"></div>
                     </div>
-                </div>
-            </td>
-            <td>
-                <!-- Optionally include a company logo here -->
-                <!-- <div class="company__logo">
-                    <img th:src="@{/images/logo.png}" alt="Company Logo" />
-                </div> -->
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- Invoice Title -->
-    <table class="invoice__title">
-        <tbody>
-        <tr>
-            <td>
-                <div class="text-center">
-                    <h1 class="invoice-title">HÓA ĐƠN <br/> INVOICE</h1>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- Customer Information -->
-    <table class="invoice__customer">
-        <tbody>
-        <tr>
-            <td class="pr-24">
-                <table>
-                    <tbody>
-                    <tr>
-                        <td class="text-nowrap pr-24"><b>Tên khách hàng/Customer name:</b></td>
-                        <td class="absorbing-column"><b th:text="${invoice.contract.owner.name}">test</b></td>
-                    </tr>
-                    <tr>
-                        <td class="text-nowrap pr-24">Phòng/Room:</td>
-                        <td class="absorbing-column" th:text="${invoice.contract.room.name}">2</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-            <!-- Additional customer details can be added here if needed -->
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- Invoice Details -->
-    <table class="invoice__detail">
-        <thead>
-        <tr>
-            <th rowspan="2" class="text-left" style="min-width: 100pt">Khoản thu <br/>(Description)</th>
-            <th colspan="2">Chỉ số điện / nước <br/>(Electricity/Water)</th>
-            <th rowspan="2">Số lượng <br/>(Quantity)</th>
-            <th rowspan="2">Đơn vị <br/> (Unit)</th>
-            <th rowspan="2">Đơn giá <br/> (Unit Price)</th>
-            <th rowspan="2">Thành tiền <br/>(Total)</th>
-        </tr>
-        <tr>
-            <th>Đầu<br/>(Previous number)</th>
-            <th>Cuối <br/>(Present number)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Room Rent Row -->
-        <tr>
-            <td class="text-left">
-                Thu tiền phòng từ
-                <span th:text="${#temporals.format(invoice.startDate, 'dd/MM/yyyy')}">09/10/2024</span>
-                đến
-                <span th:text="${#temporals.format(invoice.endDate, 'dd/MM/yyyy')}">01/11/2024</span><br/>
-                Room rent (from
-                <span th:text="${#temporals.format(invoice.startDate, 'dd/MM/yyyy')}">09/10/2024</span>
-                to
-                <span th:text="${#temporals.format(invoice.endDate, 'dd/MM/yyyy')}">01/11/2024</span><br/>)
-            </td>
-            <td></td>
-            <td></td>
-            <td th:text="${''}">1</td>
-            <td></td>
-            <td th:text="${#numbers.formatDecimal(invoice.contract.price, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-            <td th:text="${#numbers.formatDecimal(invoice.contract.price, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-        </tr>
-
-        <!-- Electricity Row -->
-        <tr>
-            <td class="text-left">Tiền điện<br/>Electricity</td>
-            <td th:text="${invoice.oldElectricityNumber}">0</td>
-            <td th:text="${invoice.newElectricityNumber}">0</td>
-            <td th:text="${invoice.usageElectricityNumber}">0</td>
-            <td>kWh</td>
-            <td th:text="${#numbers.formatDecimal(invoice.electricityUnitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-            <td th:text="${#numbers.formatDecimal(invoice.electricityAmount, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-        </tr>
-
-        <!-- Water Row -->
-        <tr>
-            <td class="text-left">Tiền nước<br/>Water</td>
-            <td th:text="${invoice.oldWaterNumber}">0</td>
-            <td th:text="${invoice.newWaterNumber}">0</td>
-            <td th:text="${invoice.usageWaterNumber}">0</td>
-            <td>m³</td>
-            <td th:text="${#numbers.formatDecimal(invoice.waterUnitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-            <td th:text="${#numbers.formatDecimal(invoice.waterAmount, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-        </tr>
-
-        <!-- Service Fees -->
-        <tr th:each="serviceFee : ${invoice.serviceFees}">
-            <td class="text-left" th:text="${serviceFee.name}">Dịch vụ khác</td>
-            <td>0</td>
-            <td>0</td>
-            <td>1</td>
-            <td></td>
-            <td th:text="${#numbers.formatDecimal(serviceFee.unitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-            <td th:text="${#numbers.formatDecimal(serviceFee.unitPrice, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-        </tr>
-
-        <!--        Other Fee row-->
-        <tr>
-            <td class="text-left" th:text="${invoice.otherFeeNote}">Phí khác</td>
-            <td>0</td>
-            <td>0</td>
-            <td>1</td>
-            <td></td>
-            <td th:text="${#numbers.formatDecimal(invoice.otherFee, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-            <td th:text="${#numbers.formatDecimal(invoice.otherFee, 0, 'WHITESPACE', 0, 'COMMA')}">0</td>
-        </tr>
-
-        <!-- Total Amounts -->
-        </tbody>
-        <tbody>
-        <tr>
-            <td colspan="6" class="text-left"><b>Giảm giá/Discount</b></td>
-            <td><b th:text="${#numbers.formatDecimal(invoice.discount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b></td>
-        </tr>
-        <tr>
-            <td colspan="6" class="text-left"><b>Tổng cộng/Total amount</b></td>
-            <td><b th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="6" class="text-left"><b>Đã trả/Paid</b></td>
-            <td><b th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'WHITESPACE', 0, 'COMMA')}">0</b></td>
-        </tr>
-        <tr>
-            <td colspan="6" class="text-left"><b>Còn lại/Remaining</b></td>
-            <td>
-                <b th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')}">2.400.000</b>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- Invoice Summary -->
-    <table class="invoice__summary">
-        <tbody>
-        <tr>
-            <td class="text-nowrap pr-24"><b>Ghi chú:</b></td>
-            <td th:text="${invoice.note}"></td>
-        </tr>
-        <tr>
-            <td class="text-nowrap pr-24"><b>Tổng số tiền phải thanh toán kì này (Total)</b></td>
-            <td class="text-nowrap pr-24"
-                th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">2.400.000đ
-            </td>
-        </tr>
-        <tr>
-            <td class="text-nowrap pr-24"><b>Tổng số tiền đã thanh toán trong kỳ (Paid)</b></td>
-            <td class="text-nowrap pr-24"
-                th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">0đ
-            </td>
-        </tr>
-        <tr>
-            <td class="text-nowrap pr-24"><b>Tổng số tiền còn phải thanh toán (Remaining)</b></td>
-            <td class="text-nowrap pr-24"
-                th:text="${#numbers.formatDecimal(invoice.totalAmount.subtract(invoice.paidAmount), 0, 'WHITESPACE', 0, 'COMMA')} + 'đ'">
-                2.400.000đ
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Bằng chữ/In words: <span th:text="${invoice.totalAmountInWords}">hai triệu bốn trăm nghìn đồng</span>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- Invoice Footer -->
-    <table class="invoice__footer">
-        <tbody>
-        <tr>
-            <td>
-                <!-- Optionally include additional footer information -->
-            </td>
-            <td>
-                <div class="invoice__footer__signature text-center" style="margin-left: 40%">
-                    <div><b>Người lập hóa đơn <br/>(Seller)</b></div>
-                    <div style="height: 2cm"></div>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 </body>

@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.huuloc.boardinghouse.dto.InvoiceDto;
 import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.dto.request.MonthYearRequest;
 import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
 import vn.huuloc.boardinghouse.service.InvoiceService;
+import vn.huuloc.boardinghouse.util.ResponseUtils;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -48,6 +50,27 @@ public class InvoiceController {
     @PostMapping("/search")
     public ResponseEntity<Page<InvoiceDto>> search(@Valid @RequestBody InvoiceSearchRequest searchRequest) {
         return ResponseEntity.ok(invoiceService.search(searchRequest));
+    }
+
+    @PostMapping("/generate")
+    public ResponseEntity<Object> generateInvoices(@Valid @RequestBody MonthYearRequest monthRecord) {
+        invoiceService.generateInvoices(monthRecord);
+        return ResponseEntity.ok(ResponseUtils.success());
+    }
+
+    @GetMapping(value = "/print/monthly", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> printMonthlyInvoices(@RequestParam("month") String month, @RequestParam("year") String year) throws IOException {
+
+        byte[] pdfBytes = invoiceService.printMonthlyInvoices(MonthYearRequest.builder()
+                        .monthYear(month + "/" + year)
+                .build());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=monthly-invoices-" + UUID.randomUUID() + ".pdf");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
     }
 
 

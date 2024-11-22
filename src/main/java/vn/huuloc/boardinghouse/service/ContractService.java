@@ -2,6 +2,7 @@ package vn.huuloc.boardinghouse.service;
 
 import org.springframework.data.domain.Page;
 import vn.huuloc.boardinghouse.dto.ContractDto;
+import vn.huuloc.boardinghouse.dto.request.AddMemberRequest;
 import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
 import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
 import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
@@ -23,7 +24,7 @@ public interface ContractService {
 
     ContractDto leave(ContractCustomerRequest request);
 
-    ContractDto addMember(CheckinRequest checkinRequest);
+    ContractDto addMember(AddMemberRequest addMemberRequest);
 
     byte[] printContract(Long id) throws IOException;
 

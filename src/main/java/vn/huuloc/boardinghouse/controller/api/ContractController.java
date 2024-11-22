@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.huuloc.boardinghouse.dto.ContractDto;
+import vn.huuloc.boardinghouse.dto.request.AddMemberRequest;
 import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
 import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
 import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
@@ -17,6 +18,7 @@ import vn.huuloc.boardinghouse.service.ContractService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/contracts")
@@ -36,7 +38,7 @@ public class ContractController {
     }
 
     @PostMapping("/add-member")
-    public ResponseEntity<ContractDto> addMember(@Valid @RequestBody CheckinRequest checkinRequest) {
+    public ResponseEntity<ContractDto> addMember(@Valid @RequestBody AddMemberRequest checkinRequest) {
         return ResponseEntity.ok(contractService.addMember(checkinRequest));
     }
 
@@ -69,6 +71,7 @@ public class ContractController {
     public ResponseEntity<List<ContractDto>> getAllContracts() {
         return ResponseEntity.ok(contractService.findAll());
     }
+
     @GetMapping(value = "/print/{id}", produces = "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     public ResponseEntity<byte[]> printContract(@PathVariable Long id) throws IOException {
         return ResponseEntity.ok()
@@ -80,7 +83,8 @@ public class ContractController {
     private HttpHeaders buildHeaders(String contractCode) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "contract_" + contractCode + ".docx");
+        UUID uuid = UUID.randomUUID();
+        headers.setContentDispositionFormData("attachment", "contract_" + uuid + ".docx");
         return headers;
     }
 

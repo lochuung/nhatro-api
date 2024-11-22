@@ -288,9 +288,13 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .map(type -> (Specification<Invoice>) (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("type"), type))
                 .orElse(Specification.where(null));
 
+        Specification<Invoice> contractFilterSpec = Optional.ofNullable(searchRequest.getContractId())
+                .map(contractId -> (Specification<Invoice>) (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("contract").get("id"), contractId))
+                .orElse(Specification.where(null));
+
         // Kết hợp tất cả Specifications
         specification = specification.and(roomIdSpec).and(monthSpec).and(isPaidSpec)
-                .and(searchSpec).and(typeSpec);
+                .and(searchSpec).and(typeSpec).and(contractFilterSpec);
 
         // Thực hiện truy vấn và ánh xạ kết quả sang DTO
         return invoiceRepository.findAll(specification, pageable)
@@ -326,14 +330,17 @@ public class InvoiceServiceImpl implements InvoiceService {
         List<Contract> contracts = contractRepository.findAllByStatus(ContractStatus.OPENING);
         for (Contract contract : contracts) {
             // if invoice exists, skip
-            if (invoiceRepository.exists(byRoomId(contract.getRoom().getId()).and(byMonthAndYear(month, year)))) {
+            if (invoiceRepository.exists(byContractId(contract.getId()).and(byMonthAndYear(month, year)))) {
                 continue;
             }
 
+            int day = Optional.ofNullable(monthRecord.getStartDay()).orElse(1);
+
+
             Invoice invoice = new Invoice();
             invoice.setContract(contract);
-            invoice.setStartDate(LocalDateTime.of(year, month, 1, 0, 0));
-            invoice.setEndDate(LocalDateTime.of(year, month, 1, 0, 0).plusMonths(1));
+            invoice.setStartDate(LocalDateTime.of(year, month, day, 0, 0));
+            invoice.setEndDate(LocalDateTime.of(year, month, day, 0, 0).plusMonths(1));
             invoice.setType(InvoiceType.MONTHLY);
             invoice.setElectricityUnitPrice(BigDecimal.valueOf(Double.parseDouble(settingService.getSetting(SettingConstants.ELECTRICITY_UNIT_PRICE))));
             invoice.setWaterUnitPrice(BigDecimal.valueOf(Double.parseDouble(settingService.getSetting(SettingConstants.WATER_UNIT_PRICE))));
@@ -346,6 +353,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             invoice.setSubTotal(invoice.getElectricityAmount().add(invoice.getWaterAmount()).add(contract.getPrice()));
             invoice.setDiscount(BigDecimal.ZERO);
             invoice.setTotalAmount(invoice.getSubTotal());
+            invoice.setPaidAmount(BigDecimal.ZERO);
             invoiceRepository.save(invoice);
         }
     }
@@ -373,6 +381,10 @@ public class InvoiceServiceImpl implements InvoiceService {
         context.setVariable("invoices", invoiceDtos);
 
         return pdfService.generatePdfFromSource(INVOICE_TEMPLATE, context);
+    }
+
+    private Specification<Invoice> byContractId(Long id) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("contract").get("id"), id);
     }
 
 

@@ -10,10 +10,7 @@ import vn.cnj.shared.sortfilter.specification.SearchSpecification;
 import vn.huuloc.boardinghouse.dto.ContractDto;
 import vn.huuloc.boardinghouse.dto.mapper.ContractMapper;
 import vn.huuloc.boardinghouse.dto.mapper.CustomerMapper;
-import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
-import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
-import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
-import vn.huuloc.boardinghouse.dto.request.CustomerRequest;
+import vn.huuloc.boardinghouse.dto.request.*;
 import vn.huuloc.boardinghouse.dto.sort.filter.ContractSearchRequest;
 import vn.huuloc.boardinghouse.entity.Contract;
 import vn.huuloc.boardinghouse.entity.ContractCustomerLinked;
@@ -89,7 +86,7 @@ public class ContractServiceImpl implements ContractService {
             room.setStatus(RoomStatus.RENTED);
             roomRepository.save(room);
 
-            contract.setOwner(renters.get(0).getCustomer());
+            contract.setOwner(Customer.builder().id(renters.get(0).getCustomerId()).build());
 
             contract = contractRepository.save(contract);
             return ContractMapper.INSTANCE.toDto(contract);
@@ -157,13 +154,44 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     @Transactional
-    public ContractDto addMember(CheckinRequest checkinRequest) {
-        Contract contract = contractRepository.findById(checkinRequest.getContractId())
+    public ContractDto addMember(AddMemberRequest addMemberRequest) {
+        Contract contract = contractRepository.findById(addMemberRequest.getContractId())
                 .orElseThrow(() -> BadRequestException.message("Không tìm thấy hợp đồng"));
         if (contract.getStatus() != ContractStatus.OPENING) {
             throw BadRequestException.message("Hợp đồng đã kết thúc");
         }
-        return addMember(checkinRequest, contract);
+        return addMember(addMemberRequest, contract);
+    }
+
+    private ContractDto addMember(AddMemberRequest addMemberRequest, Contract contract) {
+        List<Long> customerIds = addMemberRequest.getCustomers().stream()
+                .map(CustomerRequest::getId).toList();
+        List<ContractCustomerLinked> renters = contractCustomerLinkedRepository
+                .findByRenterIds(contract.getId(), customerIds);
+        // filter customer is not renter
+        List<CustomerRequest> newRenters = addMemberRequest.getCustomers().stream()
+                .filter(customerDto -> renters.stream().noneMatch(renter ->
+                        renter.getCustomerId().equals(customerDto.getId()))).toList();
+        if (newRenters.isEmpty()) {
+            throw BadRequestException.message("Các khách hàng đều đã thuê phòng này");
+        }
+        List<ContractCustomerLinked> newRentersLinks = new ArrayList<>();
+        newRenters.forEach(customerDto -> {
+            ContractCustomerLinked contractCustomerLinked = ContractCustomerLinked.builder()
+                    .contractId(contract.getId()).hasLeft(false).build();
+            if (CommonUtils.isNewRecord(customerDto.getId())) {
+                contractCustomerLinked.setCustomerId(customerService.saveOrUpdate(customerDto).getId());
+            } else {
+                contractCustomerLinked.setCustomerId(customerDto.getId());
+            }
+            newRentersLinks.add(contractCustomerLinked);
+        });
+        contractCustomerLinkedRepository.saveAll(newRentersLinks);
+
+        // update number of people
+        contract.setNumberOfPeople(contract.getNumberOfPeople() + newRenters.size());
+        contractRepository.save(contract);
+        return ContractMapper.INSTANCE.toDto(contract);
     }
 
     @Override

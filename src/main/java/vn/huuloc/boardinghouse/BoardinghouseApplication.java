@@ -22,6 +22,7 @@ public class BoardinghouseApplication {
         return args -> {
             settingService.updateSetting(SettingConstants.ELECTRICITY_UNIT_PRICE, "3000");
             settingService.updateSetting(SettingConstants.WATER_UNIT_PRICE, "6700");
+            settingService.updateSetting(SettingConstants.START_DAY_OF_INVOICE, "1");
         };
     }
 }

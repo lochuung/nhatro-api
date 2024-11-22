@@ -2,7 +2,6 @@ package vn.huuloc.boardinghouse.dto.sort.filter;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import vn.cnj.shared.sortfilter.request.SearchRequest;
 
 @EqualsAndHashCode(callSuper = true)

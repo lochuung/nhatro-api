@@ -2,10 +2,10 @@ package vn.huuloc.boardinghouse.service;
 
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import vn.huuloc.boardinghouse.dto.InvoiceDto;
-import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
-import vn.huuloc.boardinghouse.dto.request.MonthYearRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
+import vn.huuloc.boardinghouse.model.dto.InvoiceDto;
+import vn.huuloc.boardinghouse.model.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.model.dto.request.MonthYearRequest;
+import vn.huuloc.boardinghouse.model.dto.sort.filter.InvoiceSearchRequest;
 
 import java.io.IOException;
 

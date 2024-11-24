@@ -2,7 +2,7 @@ package vn.huuloc.boardinghouse.service;
 
 import org.springframework.data.domain.Page;
 import vn.cnj.shared.sortfilter.request.SearchRequest;
-import vn.huuloc.boardinghouse.dto.ServiceFeeDto;
+import vn.huuloc.boardinghouse.model.dto.ServiceFeeDto;
 
 import java.util.List;
 

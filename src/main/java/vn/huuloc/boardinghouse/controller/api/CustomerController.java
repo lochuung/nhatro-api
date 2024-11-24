@@ -3,11 +3,12 @@ package vn.huuloc.boardinghouse.controller.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.cnj.shared.sortfilter.request.SearchRequest;
-import vn.huuloc.boardinghouse.dto.CustomerDto;
-import vn.huuloc.boardinghouse.dto.request.CustomerRequest;
+import vn.huuloc.boardinghouse.model.dto.CustomerDto;
+import vn.huuloc.boardinghouse.model.dto.request.CustomerRequest;
 import vn.huuloc.boardinghouse.service.CustomerService;
 import vn.huuloc.boardinghouse.util.ResponseUtils;
 
@@ -31,7 +32,7 @@ public class CustomerController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<CustomerDto>> search(@RequestBody SearchRequest searchRequest) {
+    public ResponseEntity<Page<CustomerDto>> search(@RequestBody SearchRequest searchRequest) {
         return ResponseEntity.ok(customerService.search(searchRequest));
     }
 

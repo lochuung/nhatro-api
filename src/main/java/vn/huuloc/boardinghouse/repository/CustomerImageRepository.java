@@ -1,7 +1,7 @@
 package vn.huuloc.boardinghouse.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import vn.huuloc.boardinghouse.entity.CustomerImage;
+import vn.huuloc.boardinghouse.model.entity.CustomerImage;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,4 +12,6 @@ public interface CustomerImageRepository extends JpaRepository<CustomerImage, Lo
     Optional<CustomerImage> findByImageKey(String imageKey);
 
     List<CustomerImage> findByCustomerId(Long customerId);
+
+    void deleteByCustomerId(Long id);
 }

@@ -1,6 +1,6 @@
 package vn.huuloc.boardinghouse.service;
 
-import vn.huuloc.boardinghouse.dto.response.BranchResponse;
+import vn.huuloc.boardinghouse.model.dto.response.BranchResponse;
 
 import java.util.List;
 

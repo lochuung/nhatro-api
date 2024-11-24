@@ -8,12 +8,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.huuloc.boardinghouse.dto.ContractDto;
-import vn.huuloc.boardinghouse.dto.request.AddMemberRequest;
-import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
-import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
-import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.ContractSearchRequest;
+import vn.huuloc.boardinghouse.model.dto.ContractDto;
+import vn.huuloc.boardinghouse.model.dto.request.AddMemberRequest;
+import vn.huuloc.boardinghouse.model.dto.request.CheckinRequest;
+import vn.huuloc.boardinghouse.model.dto.request.CheckoutRequest;
+import vn.huuloc.boardinghouse.model.dto.request.ContractCustomerRequest;
+import vn.huuloc.boardinghouse.model.dto.sort.filter.ContractSearchRequest;
+import vn.huuloc.boardinghouse.model.projection.LatestNumberIndex;
 import vn.huuloc.boardinghouse.service.ContractService;
 
 import java.io.IOException;
@@ -60,6 +61,11 @@ public class ContractController {
     @PostMapping("/search")
     public ResponseEntity<Page<ContractDto>> search(@RequestBody ContractSearchRequest searchRequest) {
         return ResponseEntity.ok(contractService.search(searchRequest));
+    }
+
+    @PostMapping("/latest-number-index")
+    public LatestNumberIndex findLatestNumberIndexById(@RequestParam Long id) {
+        return contractService.findOldNumberIndexById(id);
     }
 
     @GetMapping("/all-available")

@@ -1,17 +1,20 @@
 package vn.huuloc.boardinghouse.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import vn.cnj.shared.sortfilter.request.SearchRequest;
 import vn.cnj.shared.sortfilter.specification.SearchSpecification;
-import vn.huuloc.boardinghouse.dto.CustomerDto;
-import vn.huuloc.boardinghouse.dto.mapper.CustomerMapper;
-import vn.huuloc.boardinghouse.dto.request.CustomerRequest;
-import vn.huuloc.boardinghouse.entity.Customer;
+import vn.huuloc.boardinghouse.model.dto.CustomerDto;
+import vn.huuloc.boardinghouse.model.dto.mapper.CustomerMapper;
+import vn.huuloc.boardinghouse.model.dto.request.CustomerRequest;
+import vn.huuloc.boardinghouse.model.entity.Customer;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
+import vn.huuloc.boardinghouse.repository.CustomerImageRepository;
 import vn.huuloc.boardinghouse.repository.CustomerRepository;
 import vn.huuloc.boardinghouse.service.CustomerService;
 import vn.huuloc.boardinghouse.util.CommonUtils;
@@ -23,6 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
+    private final CustomerImageRepository customerImageRepository;
 
     @Override
     public List<CustomerDto> findAll() {
@@ -38,12 +42,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerDto> search(SearchRequest searchRequest) {
+    public Page<CustomerDto> search(SearchRequest searchRequest) {
         Specification<Customer> searchSpec = new SearchSpecification<>(searchRequest);
         Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(),
                 searchRequest.getSize());
-        List<Customer> customers = customerRepository.findAll(searchSpec, pageable).getContent();
-        return CustomerMapper.INSTANCE.toDto(customers);
+        Page<Customer> customers = customerRepository.findAll(searchSpec, pageable);
+        return customers.map(CustomerMapper.INSTANCE::toDto);
     }
 
     @Override
@@ -80,9 +84,13 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> BadRequestException.message("Không tìm thấy khách hàng"));
+        if (!customer.getContractCustomerLinkeds().isEmpty()) {
+            throw BadRequestException.message("Khách hàng đã có hợp đồng");
+        }
         customerRepository.delete(customer);
     }
 }

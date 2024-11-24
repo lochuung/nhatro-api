@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import vn.cnj.shared.sortfilter.request.SearchRequest;
-import vn.huuloc.boardinghouse.dto.ServiceFeeDto;
+import vn.huuloc.boardinghouse.model.dto.ServiceFeeDto;
 import vn.huuloc.boardinghouse.service.ServiceFeeService;
 
 import java.util.List;

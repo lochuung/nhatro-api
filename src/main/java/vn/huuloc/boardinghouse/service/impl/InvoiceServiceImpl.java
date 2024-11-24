@@ -11,19 +11,21 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import vn.cnj.shared.sortfilter.specification.SearchSpecification;
 import vn.huuloc.boardinghouse.constant.SettingConstants;
-import vn.huuloc.boardinghouse.dto.InvoiceDto;
-import vn.huuloc.boardinghouse.dto.ServiceFeeDto;
-import vn.huuloc.boardinghouse.dto.mapper.ContractMapper;
-import vn.huuloc.boardinghouse.dto.mapper.InvoiceMapper;
-import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
-import vn.huuloc.boardinghouse.dto.request.MonthYearRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
-import vn.huuloc.boardinghouse.entity.Contract;
-import vn.huuloc.boardinghouse.entity.Invoice;
-import vn.huuloc.boardinghouse.entity.ServiceFee;
+import vn.huuloc.boardinghouse.model.dto.InvoiceDto;
+import vn.huuloc.boardinghouse.model.dto.ServiceFeeDto;
+import vn.huuloc.boardinghouse.model.dto.mapper.ContractMapper;
+import vn.huuloc.boardinghouse.model.dto.mapper.InvoiceMapper;
+import vn.huuloc.boardinghouse.model.dto.request.GenerateContractRequest;
+import vn.huuloc.boardinghouse.model.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.model.dto.request.MonthYearRequest;
+import vn.huuloc.boardinghouse.model.dto.sort.filter.InvoiceSearchRequest;
+import vn.huuloc.boardinghouse.model.entity.Contract;
+import vn.huuloc.boardinghouse.model.entity.Invoice;
+import vn.huuloc.boardinghouse.model.entity.ServiceFee;
 import vn.huuloc.boardinghouse.enums.ContractStatus;
 import vn.huuloc.boardinghouse.enums.InvoiceType;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
+import vn.huuloc.boardinghouse.model.projection.ContractWithLatestNumberIndex;
 import vn.huuloc.boardinghouse.repository.ContractRepository;
 import vn.huuloc.boardinghouse.repository.InvoiceRepository;
 import vn.huuloc.boardinghouse.repository.ServiceFeeRepository;
@@ -36,8 +38,10 @@ import vn.huuloc.boardinghouse.util.InvoiceUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -327,7 +331,21 @@ public class InvoiceServiceImpl implements InvoiceService {
         int month = Integer.parseInt(monthYear[0]);
         int year = Integer.parseInt(monthYear[1]);
 
+        Map<Long, GenerateContractRequest> newContractNumberIndexMap = Optional.ofNullable(monthRecord.getGenerateContractRequest())
+                .stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toMap(GenerateContractRequest::getContractId, generateContractRequest -> generateContractRequest));
+
         List<Contract> contracts = contractRepository.findAllByStatus(ContractStatus.OPENING);
+
+        Map<Long, ContractWithLatestNumberIndex> contractsWithLatestNumberIndex = contractRepository.findAllWithLatestNumberIndex(ContractStatus.OPENING)
+                .stream()
+                .collect(Collectors.toMap(c -> c.getContract().getId(), contractWithLatestNumberIndex -> contractWithLatestNumberIndex));
+
+        if (contracts.isEmpty()) {
+            throw BadRequestException.message("Không có hợp đồng nào để tạo hóa đơn");
+        }
+        boolean isGenerated = false;
         for (Contract contract : contracts) {
             // if invoice exists, skip
             if (invoiceRepository.exists(byContractId(contract.getId()).and(byMonthAndYear(month, year)))) {
@@ -336,14 +354,45 @@ public class InvoiceServiceImpl implements InvoiceService {
 
             int day = Optional.ofNullable(monthRecord.getStartDay()).orElse(1);
 
+            double oldElectricityIndex = Optional.ofNullable(contractsWithLatestNumberIndex.get(contract.getId()))
+                    .map(ContractWithLatestNumberIndex::getLatestElectricityIndex)
+                    .orElse(contract.getCheckinElectricNumber());
+            double oldWaterIndex = Optional.ofNullable(contractsWithLatestNumberIndex.get(contract.getId()))
+                    .map(ContractWithLatestNumberIndex::getLatestWaterIndex)
+                    .orElse(contract.getCheckinWaterNumber());
+
+            double newElectricityIndex = Optional.ofNullable(newContractNumberIndexMap.get(contract.getId()))
+                    .map(GenerateContractRequest::getNewElectricityIndex)
+                    .orElse(oldElectricityIndex);
+            double newWaterIndex = Optional.ofNullable(newContractNumberIndexMap.get(contract.getId()))
+                    .map(GenerateContractRequest::getNewWaterIndex)
+                    .orElse(oldWaterIndex);
+
+            if (newElectricityIndex < oldElectricityIndex) {
+                throw BadRequestException.message("Chỉ số điện của phòng " + contract.getRoom().getName() + " không hợp lệ, chỉ số cũ là " + oldElectricityIndex);
+            }
+            if (newWaterIndex < oldWaterIndex) {
+                throw BadRequestException.message("Chỉ số nước của phòng " + contract.getRoom().getName() + " không hợp lệ, chỉ số cũ là " + oldWaterIndex);
+            }
+
+            isGenerated = true;
+
 
             Invoice invoice = new Invoice();
             invoice.setContract(contract);
             invoice.setStartDate(LocalDateTime.of(year, month, day, 0, 0));
             invoice.setEndDate(LocalDateTime.of(year, month, day, 0, 0).plusMonths(1));
             invoice.setType(InvoiceType.MONTHLY);
+
             invoice.setElectricityUnitPrice(BigDecimal.valueOf(Double.parseDouble(settingService.getSetting(SettingConstants.ELECTRICITY_UNIT_PRICE))));
             invoice.setWaterUnitPrice(BigDecimal.valueOf(Double.parseDouble(settingService.getSetting(SettingConstants.WATER_UNIT_PRICE))));
+            invoice.setOldElectricityNumber(oldElectricityIndex);
+            invoice.setOldWaterNumber(oldWaterIndex);
+            invoice.setNewElectricityNumber(newElectricityIndex);
+            invoice.setNewWaterNumber(newWaterIndex);
+            invoice.setUsageElectricityNumber(newElectricityIndex - oldElectricityIndex);
+            invoice.setUsageWaterNumber(newWaterIndex - oldWaterIndex);
+
             invoice.setElectricityAmount(InvoiceUtils.calculateElectricityAmount(invoice));
             invoice.setWaterAmount(InvoiceUtils.calculateWaterAmount(invoice));
             invoice.setTotalServiceFee(BigDecimal.ZERO);
@@ -355,6 +404,10 @@ public class InvoiceServiceImpl implements InvoiceService {
             invoice.setTotalAmount(invoice.getSubTotal());
             invoice.setPaidAmount(BigDecimal.ZERO);
             invoiceRepository.save(invoice);
+        }
+
+        if (!isGenerated) {
+            throw BadRequestException.message("Chưa có hợp đồng nào được tạo hóa đơn");
         }
     }
 
@@ -396,13 +449,14 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     // Phương thức helper cho Month và Year
     private Specification<Invoice> byMonthAndYear(int month, int year) {
-        LocalDateTime startDate = LocalDateTime.of(year, month, 1, 0, 0);
-        LocalDateTime endDate = startDate.plusMonths(1);
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
         return (root, query, criteriaBuilder) -> {
             Predicate startDatePredicate = criteriaBuilder.between(root.get("startDate"), startDate, endDate);
-            Predicate endDatePredicate = criteriaBuilder.between(root.get("endDate"), startDate, endDate);
-            return criteriaBuilder.or(startDatePredicate, endDatePredicate);
+//            Predicate endDatePredicate = criteriaBuilder.between(root.get("endDate"), startDate, endDate);
+//            return criteriaBuilder.or(startDatePredicate, endDatePredicate);
+            return startDatePredicate;
         };
     }
 

@@ -1,9 +1,10 @@
 package vn.huuloc.boardinghouse.service;
 
 import org.springframework.data.domain.Page;
-import vn.huuloc.boardinghouse.dto.request.RoomRequest;
-import vn.huuloc.boardinghouse.dto.response.RoomResponse;
-import vn.huuloc.boardinghouse.dto.sort.filter.RoomSearchRequest;
+import vn.huuloc.boardinghouse.model.dto.request.RoomRequest;
+import vn.huuloc.boardinghouse.model.dto.response.RoomResponse;
+import vn.huuloc.boardinghouse.model.dto.sort.filter.RoomSearchRequest;
+import vn.huuloc.boardinghouse.model.projection.LatestNumberIndex;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface RoomService {
     List<RoomResponse> findAll();
 
     Page<RoomResponse> search(RoomSearchRequest request);
+
+    LatestNumberIndex findLatestNumberIndex(Long id);
 }

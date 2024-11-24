@@ -1,7 +1,7 @@
 package vn.huuloc.boardinghouse.service;
 
 
-import vn.huuloc.boardinghouse.dto.SettingDto;
+import vn.huuloc.boardinghouse.model.dto.SettingDto;
 
 import java.util.List;
 import java.util.Map;

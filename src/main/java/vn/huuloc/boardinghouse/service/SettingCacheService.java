@@ -3,8 +3,8 @@ package vn.huuloc.boardinghouse.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import vn.huuloc.boardinghouse.dto.SettingDto;
-import vn.huuloc.boardinghouse.dto.mapper.SettingMapper;
+import vn.huuloc.boardinghouse.model.dto.SettingDto;
+import vn.huuloc.boardinghouse.model.dto.mapper.SettingMapper;
 import vn.huuloc.boardinghouse.repository.SettingRepository;
 
 import java.util.ArrayList;

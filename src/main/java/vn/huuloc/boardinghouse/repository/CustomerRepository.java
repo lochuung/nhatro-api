@@ -2,7 +2,7 @@ package vn.huuloc.boardinghouse.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import vn.huuloc.boardinghouse.entity.Customer;
+import vn.huuloc.boardinghouse.model.entity.Customer;
 
 import java.util.Optional;
 

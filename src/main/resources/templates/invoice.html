@@ -593,7 +593,7 @@
             </tr>
 
             <!--        Other Fee row-->
-            <tr>
+            <tr th:if="${invoice.otherFee != null && invoice.otherFee > 0}">
                 <td class="text-left" th:text="${invoice.otherFeeNote}">Phí khác</td>
                 <td>0</td>
                 <td>0</td>

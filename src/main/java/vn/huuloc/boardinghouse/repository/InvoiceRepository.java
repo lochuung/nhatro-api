@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import vn.huuloc.boardinghouse.entity.Invoice;
+import vn.huuloc.boardinghouse.model.entity.Invoice;
 
 import java.util.Collection;
 

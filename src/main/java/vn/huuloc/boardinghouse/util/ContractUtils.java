@@ -3,10 +3,10 @@ package vn.huuloc.boardinghouse.util;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import vn.huuloc.boardinghouse.constant.SettingConstants;
-import vn.huuloc.boardinghouse.entity.Branch;
-import vn.huuloc.boardinghouse.entity.Contract;
-import vn.huuloc.boardinghouse.entity.ContractCustomerLinked;
-import vn.huuloc.boardinghouse.entity.Customer;
+import vn.huuloc.boardinghouse.model.entity.Branch;
+import vn.huuloc.boardinghouse.model.entity.Contract;
+import vn.huuloc.boardinghouse.model.entity.ContractCustomerLinked;
+import vn.huuloc.boardinghouse.model.entity.Customer;
 import vn.huuloc.boardinghouse.repository.ContractCustomerLinkedRepository;
 import vn.huuloc.boardinghouse.service.SettingService;
 
@@ -72,6 +72,12 @@ public class ContractUtils {
         data.put("owner_ngay_cap", owner.getIdDate());
         data.put("owner_noi_cap", owner.getIdPlace());
         data.put("owner_address", owner.getAddress());
+
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            if (entry.getValue() == null) {
+                data.put(entry.getKey(), "...");
+            }
+        }
 
         return data;
     }

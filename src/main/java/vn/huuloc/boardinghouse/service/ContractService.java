@@ -1,12 +1,13 @@
 package vn.huuloc.boardinghouse.service;
 
 import org.springframework.data.domain.Page;
-import vn.huuloc.boardinghouse.dto.ContractDto;
-import vn.huuloc.boardinghouse.dto.request.AddMemberRequest;
-import vn.huuloc.boardinghouse.dto.request.CheckinRequest;
-import vn.huuloc.boardinghouse.dto.request.CheckoutRequest;
-import vn.huuloc.boardinghouse.dto.request.ContractCustomerRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.ContractSearchRequest;
+import vn.huuloc.boardinghouse.model.dto.ContractDto;
+import vn.huuloc.boardinghouse.model.dto.request.AddMemberRequest;
+import vn.huuloc.boardinghouse.model.dto.request.CheckinRequest;
+import vn.huuloc.boardinghouse.model.dto.request.CheckoutRequest;
+import vn.huuloc.boardinghouse.model.dto.request.ContractCustomerRequest;
+import vn.huuloc.boardinghouse.model.dto.sort.filter.ContractSearchRequest;
+import vn.huuloc.boardinghouse.model.projection.LatestNumberIndex;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,4 +32,6 @@ public interface ContractService {
     List<ContractDto> findAllAvailable();
 
     List<ContractDto> findAll();
+
+    LatestNumberIndex findOldNumberIndexById(Long id);
 }

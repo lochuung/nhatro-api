@@ -1,7 +1,7 @@
 package vn.huuloc.boardinghouse.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import vn.huuloc.boardinghouse.dto.CustomerImageDto;
+import vn.huuloc.boardinghouse.model.dto.CustomerImageDto;
 
 import java.util.List;
 

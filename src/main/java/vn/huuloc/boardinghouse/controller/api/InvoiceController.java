@@ -8,10 +8,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.huuloc.boardinghouse.dto.InvoiceDto;
-import vn.huuloc.boardinghouse.dto.request.InvoiceRequest;
-import vn.huuloc.boardinghouse.dto.request.MonthYearRequest;
-import vn.huuloc.boardinghouse.dto.sort.filter.InvoiceSearchRequest;
+import vn.huuloc.boardinghouse.model.dto.InvoiceDto;
+import vn.huuloc.boardinghouse.model.dto.request.InvoiceRequest;
+import vn.huuloc.boardinghouse.model.dto.request.MonthYearRequest;
+import vn.huuloc.boardinghouse.model.dto.sort.filter.InvoiceSearchRequest;
 import vn.huuloc.boardinghouse.service.InvoiceService;
 import vn.huuloc.boardinghouse.util.ResponseUtils;
 

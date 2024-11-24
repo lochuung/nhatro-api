@@ -3,7 +3,7 @@ package vn.huuloc.boardinghouse.controller.api;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import vn.huuloc.boardinghouse.dto.SettingDto;
+import vn.huuloc.boardinghouse.model.dto.SettingDto;
 import vn.huuloc.boardinghouse.service.SettingService;
 
 import java.util.Map;

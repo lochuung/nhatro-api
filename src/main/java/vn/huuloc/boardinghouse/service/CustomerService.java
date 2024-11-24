@@ -1,8 +1,9 @@
 package vn.huuloc.boardinghouse.service;
 
+import org.springframework.data.domain.Page;
 import vn.cnj.shared.sortfilter.request.SearchRequest;
-import vn.huuloc.boardinghouse.dto.CustomerDto;
-import vn.huuloc.boardinghouse.dto.request.CustomerRequest;
+import vn.huuloc.boardinghouse.model.dto.CustomerDto;
+import vn.huuloc.boardinghouse.model.dto.request.CustomerRequest;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface CustomerService {
 
     CustomerDto findById(Long id);
 
-    List<CustomerDto> search(SearchRequest searchRequest);
+    Page<CustomerDto> search(SearchRequest searchRequest);
 
     CustomerDto saveOrUpdate(CustomerRequest customerRequest);
 

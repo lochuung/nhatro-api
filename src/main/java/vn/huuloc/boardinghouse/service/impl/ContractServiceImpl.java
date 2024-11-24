@@ -7,18 +7,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.cnj.shared.sortfilter.specification.SearchSpecification;
-import vn.huuloc.boardinghouse.dto.ContractDto;
-import vn.huuloc.boardinghouse.dto.mapper.ContractMapper;
-import vn.huuloc.boardinghouse.dto.mapper.CustomerMapper;
-import vn.huuloc.boardinghouse.dto.request.*;
-import vn.huuloc.boardinghouse.dto.sort.filter.ContractSearchRequest;
-import vn.huuloc.boardinghouse.entity.Contract;
-import vn.huuloc.boardinghouse.entity.ContractCustomerLinked;
-import vn.huuloc.boardinghouse.entity.Customer;
-import vn.huuloc.boardinghouse.entity.Room;
+import vn.huuloc.boardinghouse.model.dto.ContractDto;
+import vn.huuloc.boardinghouse.model.dto.mapper.ContractMapper;
+import vn.huuloc.boardinghouse.model.dto.mapper.CustomerMapper;
+import vn.huuloc.boardinghouse.model.dto.request.*;
+import vn.huuloc.boardinghouse.model.dto.sort.filter.ContractSearchRequest;
+import vn.huuloc.boardinghouse.model.entity.Contract;
+import vn.huuloc.boardinghouse.model.entity.ContractCustomerLinked;
+import vn.huuloc.boardinghouse.model.entity.Customer;
+import vn.huuloc.boardinghouse.model.entity.Room;
 import vn.huuloc.boardinghouse.enums.ContractStatus;
 import vn.huuloc.boardinghouse.enums.RoomStatus;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
+import vn.huuloc.boardinghouse.model.projection.LatestNumberIndex;
 import vn.huuloc.boardinghouse.repository.ContractCustomerLinkedRepository;
 import vn.huuloc.boardinghouse.repository.ContractRepository;
 import vn.huuloc.boardinghouse.repository.RoomRepository;
@@ -215,6 +216,17 @@ public class ContractServiceImpl implements ContractService {
     public List<ContractDto> findAll() {
         List<Contract> contracts = contractRepository.findAll();
         return ContractMapper.INSTANCE.toDto(contracts);
+    }
+
+    @Override
+    public LatestNumberIndex findOldNumberIndexById(Long id) {
+        Contract contract = contractRepository.findById(id).orElseThrow(() ->
+                BadRequestException.message("Không tìm thấy hợp đồng"));
+        LatestNumberIndex latestNumberIndex = contractRepository.findLatestNumberIndexById(contract);
+        if (latestNumberIndex == null) {
+            latestNumberIndex = new LatestNumberIndex(contract.getCheckinElectricNumber(), contract.getCheckinWaterNumber());
+        }
+        return latestNumberIndex;
     }
 
     private ContractDto addMember(CheckinRequest checkinRequest, Contract contract) {

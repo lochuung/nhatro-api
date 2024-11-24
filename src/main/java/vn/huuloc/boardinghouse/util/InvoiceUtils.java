@@ -1,7 +1,7 @@
 package vn.huuloc.boardinghouse.util;
 
 import lombok.experimental.UtilityClass;
-import vn.huuloc.boardinghouse.entity.Invoice;
+import vn.huuloc.boardinghouse.model.entity.Invoice;
 
 import java.math.BigDecimal;
 

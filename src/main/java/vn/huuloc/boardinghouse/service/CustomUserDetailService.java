@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import vn.huuloc.boardinghouse.entity.User;
+import vn.huuloc.boardinghouse.model.entity.User;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
 import vn.huuloc.boardinghouse.repository.UserRepository;
 

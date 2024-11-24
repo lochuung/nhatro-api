@@ -7,15 +7,16 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import vn.cnj.shared.sortfilter.specification.SearchSpecification;
-import vn.huuloc.boardinghouse.dto.mapper.RoomMapper;
-import vn.huuloc.boardinghouse.dto.request.RoomRequest;
-import vn.huuloc.boardinghouse.dto.response.RoomResponse;
-import vn.huuloc.boardinghouse.dto.sort.filter.RoomSearchRequest;
-import vn.huuloc.boardinghouse.entity.Branch;
-import vn.huuloc.boardinghouse.entity.Room;
+import vn.huuloc.boardinghouse.model.dto.mapper.RoomMapper;
+import vn.huuloc.boardinghouse.model.dto.request.RoomRequest;
+import vn.huuloc.boardinghouse.model.dto.response.RoomResponse;
+import vn.huuloc.boardinghouse.model.dto.sort.filter.RoomSearchRequest;
+import vn.huuloc.boardinghouse.model.entity.Branch;
+import vn.huuloc.boardinghouse.model.entity.Room;
 import vn.huuloc.boardinghouse.enums.RoomDisplayType;
 import vn.huuloc.boardinghouse.enums.RoomStatus;
 import vn.huuloc.boardinghouse.exception.BadRequestException;
+import vn.huuloc.boardinghouse.model.projection.LatestNumberIndex;
 import vn.huuloc.boardinghouse.repository.BranchRepository;
 import vn.huuloc.boardinghouse.repository.RoomRepository;
 import vn.huuloc.boardinghouse.service.RoomService;
@@ -104,5 +105,17 @@ public class RoomServiceImpl implements RoomService {
         Pageable pageable = SearchSpecification.getPageable(request.getPage(), request.getSize());
         Page<Room> entities = roomRepository.findAll(specification, pageable);
         return entities.map(RoomMapper.INSTANCE::toDto);
+    }
+
+    @Override
+    public LatestNumberIndex findLatestNumberIndex(Long id) {
+        Room room = roomRepository.findById(id).orElseThrow(() -> BadRequestException.message("Không tìm thấy phòng trọ"));
+        LatestNumberIndex latestNumberIndex = roomRepository.findLatestNumberIndex(room);
+        if (latestNumberIndex == null) {
+            latestNumberIndex = new LatestNumberIndex();
+            latestNumberIndex.setLatestWaterIndex(0.0);
+            latestNumberIndex.setLatestElectricityIndex(0.0);
+        }
+        return latestNumberIndex;
     }
 }

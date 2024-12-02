@@ -17,6 +17,16 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        concurrency: 3
+        max-concurrency: 10
   jpa:
     generate-ddl: true
     show-sql: false
@@ -28,15 +38,15 @@ spring:
   swagger-ui:
     operationsSorter: method
     path: /swagger-ui/index.html
-  flyway:
-    schemas: boarding_house
-    url: ${spring.datasource.url}
-    user: ${spring.datasource.username}
-    password: ${spring.datasource.password}
-    baselineOnMigrate: true
-    baseline-version: 0
-    enabled: true
-    locations: classpath:db/migration
+#  flyway:
+#    schemas: boarding_house
+#    url: ${spring.datasource.url}
+#    user: ${spring.datasource.username}
+#    password: ${spring.datasource.password}
+#    baselineOnMigrate: true
+#    baseline-version: 0
+#    enabled: true
+#    locations: classpath:db/migration
   thymeleaf:
     encoding: UTF-8
     prefix: classpath:/templates/

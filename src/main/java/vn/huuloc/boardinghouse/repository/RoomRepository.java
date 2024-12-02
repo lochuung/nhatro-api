@@ -25,4 +25,16 @@ public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificat
             )
             """)
     LatestNumberIndex findLatestNumberIndex(@Param("room") Room room);
+
+    @Query("SELECT COUNT(r) FROM Room r")
+    Long countTotalRooms();
+
+    @Query("SELECT COUNT(r) FROM Room r WHERE r.status = 'RENTED'")
+    Long countOccupiedRooms();
+
+    @Query("SELECT COUNT(r) FROM Room r WHERE r.status = 'RENTED' AND YEAR(r.updatedDate) = :year AND MONTH(r.updatedDate) = :month")
+    Long countOccupiedRoomsForMonth(@Param("year") int year, @Param("month") int month);
+
+    @Query("SELECT COUNT(r) FROM Room r WHERE r.status = 'AVAILABLE' AND YEAR(r.updatedDate) = :year AND MONTH(r.updatedDate) = :month")
+    Long countAvailableRoomsForMonth(@Param("year") int year, @Param("month") int month);
 }

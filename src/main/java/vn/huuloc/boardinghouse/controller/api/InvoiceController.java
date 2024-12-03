@@ -14,6 +14,7 @@ import vn.huuloc.boardinghouse.model.dto.request.MonthYearRequest;
 import vn.huuloc.boardinghouse.model.dto.sort.filter.InvoiceSearchRequest;
 import vn.huuloc.boardinghouse.service.InvoiceService;
 import vn.huuloc.boardinghouse.util.ResponseUtils;
+import vn.huuloc.boardinghouse.model.dto.request.PaymentRequest;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -33,6 +34,11 @@ public class InvoiceController {
     @PutMapping
     public ResponseEntity<InvoiceDto> update(@Valid @RequestBody InvoiceRequest invoiceRequest) {
         return ResponseEntity.ok(invoiceService.update(invoiceRequest));
+    }
+
+    @PutMapping("/payment/{id}")
+    public ResponseEntity<InvoiceDto> updatePayment(@PathVariable Long id, @Valid @RequestBody PaymentRequest request) {
+        return ResponseEntity.ok(invoiceService.updatePayment(id, request.getPaidAmount()));
     }
 
     @DeleteMapping("/{id}")

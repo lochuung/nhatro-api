@@ -238,6 +238,20 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    @Transactional
+    public InvoiceDto updatePayment(Long id, BigDecimal paidAmount) {
+        Invoice invoice = invoiceRepository.findById(id)
+                .orElseThrow(() -> BadRequestException.message("Hóa đơn không tồn tại"));
+        
+        if (paidAmount.compareTo(BigDecimal.ZERO) < 0) {
+            throw BadRequestException.message("Số tiền thanh toán không được âm");
+        }
+
+        invoice.setPaidAmount(paidAmount);
+        return InvoiceMapper.INSTANCE.toDto(invoiceRepository.save(invoice));
+    }
+
+    @Override
     public void delete(Long id) {
         Invoice invoice = invoiceRepository.findById(id)
                 .orElseThrow(() -> BadRequestException.message("Hóa đơn không tồn tại"));

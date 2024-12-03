@@ -79,6 +79,7 @@ The application uses the following configuration files:
 
 ## Project Structure
 
+```
 src/
 ├── main/
 │   ├── java/
@@ -90,6 +91,7 @@ src/
 │   └── resources/
 │       ├── templates/      # Document templates
 │       └── application.yml # Application configuration
+```
 
 ## License
 

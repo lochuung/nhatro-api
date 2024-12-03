@@ -8,6 +8,7 @@ import vn.huuloc.boardinghouse.model.dto.request.MonthYearRequest;
 import vn.huuloc.boardinghouse.model.dto.sort.filter.InvoiceSearchRequest;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 public interface InvoiceService {
     InvoiceDto create(InvoiceRequest invoiceRequest);
@@ -25,4 +26,6 @@ public interface InvoiceService {
     void generateInvoices(MonthYearRequest monthRecord);
 
     byte[] printMonthlyInvoices(@Valid MonthYearRequest monthRecord) throws IOException;
+
+    InvoiceDto updatePayment(Long id, BigDecimal paidAmount);
 }
